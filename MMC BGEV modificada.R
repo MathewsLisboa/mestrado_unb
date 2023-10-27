@@ -11,7 +11,7 @@ library(bgumbel)
 dbgevd <- function(y, mu, sigma, xi, delta){
   T      <- (y-mu)*(abs(y-mu)^delta)#*sigma
   Tlinha <- (delta + 1)*(abs(y-mu)^delta)#*sigma
-  pdf    <- dgevd(T, 0, scale=sigma, shape=0)*Tlinha
+  pdf    <- dgevd(T, 0, scale=sigma, shape=xi)*Tlinha
   return(pdf)
 }
 
@@ -193,30 +193,30 @@ legend(x=1.2, y=1.2, legend = c(expression(paste(delta, "= 0")), expression(past
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #QUANTIL
 qbgevd   <- function(p, mu, sigma, xi, delta){
-  quantile <- sign(qgev(p, mu, sigma, xi))*(abs(qgev(p, 0, sigma, xi)))^(1/(delta + 1)) + mu
+  quantile <- sign(qgevd(p, mu, sigma, xi))*(abs(qgevd(p, mu, sigma, xi)))^(1/(delta + 1)) + mu
   return(quantile)
 }
 
-## qgevd essa função equivale a essa expressão gigante aqui em que 
-#y <- 0.9
-#sign(-10*log(-log(y)))*(abs(-10*log(log(1/y)))^(1/(delta+1))) + mu
+# xi <- 0
+# sigma <- 10
+# ## qgevd essa função equivale a essa expressão gigante aqui em que 
+# qbgevd(0.9, mu,sigma,xi,delta)
+# y <- 0.9
+# sign(-sigma*log(-log(y)))*(abs(-sigma*log(log(1/y)))^(1/(delta+1))) + mu
 ## essa é a função quantil da bigeb
-
-
-
 
 rdgevd <- function(n, mu, sigma, xi, delta){
   U <- runif(n)
-  rnumber <- qbgevd(U, mu, sigma=10, xi, delta)
+  rnumber <- qbgevd(U, mu, sigma, xi, delta)
   return(rnumber)
 }
 
 
 n       <- 10^3
 mu      <- 0
-sigma   <- 2
-xi      <- 1
-delta   <- 3
+sigma   <- 1
+xi      <- 0.5
+delta   <- 4
 
 
 Z <- rdgevd(n, mu, sigma, xi, delta)
@@ -227,40 +227,50 @@ lines(x,dbgevd(x, mu, sigma, xi, delta),lty=1,lwd=2)###########################
 
 
 box()
+sigma <- 0
+sigma <- ifelse(sigma>0,sigma,1)
 
 
 lik1 <- function(theta, y){
+  
   par_len <- length(theta)
   mu      <- theta[1]
-  sigma   <- theta[2]
+  sigma   <- ifelse(theta[2]>0,theta[2],1)
   xi      <- theta[3]
   delta   <- theta[4]
  
   Tlinha <- (delta + 1)*(abs(y-mu)^delta)#*sigma
-   T      <- (y-mu)*(abs(y-mu)^delta)#*sigma
-  dbgevd <- dgev(T, mu, sigma, xi)*Tlinha
+  T      <- (y-mu)*(abs(y-mu)^delta)#*sigma
+  dbgevd_l <- dgevd(T, mu, sigma, xi)*Tlinha
   
-  logl <- sum(log(dbgevd(y,mu, sigma, xi, delta)))####
+  logl <- sum(dbgevd_l)####
   return(-logl)
 }
-
-n       <- 500
+n       <- 10^3
 mu      <- 0
-sigma   <- 10
-xi      <- 1
-delta   <- 4
+sigma   <- 1
+xi      <- 0.5
+delta   <- 2
+
 
 Z <- rdgevd(n, mu, sigma, xi, delta)
-hist(Z)
+hist(Z,freq = FALSE,main="",xlab="x",ylab="Density",lwd=2)
+y <- Z
+Tlinha <- (delta + 1)*(abs(y-mu)^delta)#*sigma
+T      <- (y-mu)*(abs(y-mu)^delta)#*sigma
+dbgevd_l <- dgevd(T, mu, sigma, xi)*Tlinha
+hist(dbgevd_l)
+sum(log(dbgevd_l))
 
-starts <- c(mu, sigma, xi, delta)
+x <- seq(min(Z), max(Z), 0.01)
+hist(Z,freq = FALSE,main="",xlab="x",ylab="Density",lwd=2)
+lines(x,dbgevd(x, mu, sigma, xi, delta),lty=1,lwd=2)###########################
 
-test <-optim(par= starts, fn = lik1, y=Z, method="BFGS")
+starts <- c(mu,sigma, xi, delta)
 
+test <-optim(par= starts, fn = lik1, y=Z, method="BFGS",)
+#test$par
 test$par
-
-
-
 
 ###################
 #Monte Carlo
@@ -270,15 +280,14 @@ test$par
 #xi = -0.5 and 0.5
 #delta -0.5, 0, 0.3, 1, 2
 
-
-
-
 R       <- 500
 n       <- 50
-mu      <- 1
+mu      <- 0
 sigma   <- 10
 xi      <- 0
 delta   <- 2
+
+xi
 
 
 muhat      = rep(NA, times = R)
@@ -300,7 +309,12 @@ for(k in (1:R)){
   deltahat[k]    <- esti$par[4]
 }
 
+warnings()
 ################################################################################################
+
+
+muhat
+
 show_condition <- function(code) {
   tryCatch(code,
            error = function(c) "error",
@@ -308,6 +322,7 @@ show_condition <- function(code) {
            message = function(c) "message"
   )}
 show_condition(optim(par= starts, fn = lik1, y=Z, method="BFGS"))=="error"
+
 suppressWarnings(optim(par= starts, fn = lik1, y=Z, method="BFGS"))
 
 R       <- 10;n       <- 50;mu      <- 1;sigma   <- 10
@@ -359,7 +374,6 @@ IC_sup<-estimate_xi+qnorm((1-alfa/2),mean=0,sd=1)*se#0.3194968
 #estimate_sigma 
 #estimate_delta
 
-
 #starts
 
 ################################
@@ -367,7 +381,6 @@ RB_xi    <- (estimate_xi - xi)/xi
 RB_mu    <- (estimate_mu - mu)/mu
 RB_sigma <- (estimate_sigma - sigma)/sigma
 RB_delta <- (estimate_delta - delta)/delta
-
 
 RB_xi
 RB_mu
@@ -396,23 +409,23 @@ RMSE_sigma
 RMSE_delta
 
 ######################################
-RMSE_xi 
-[1] 0.1440237
-> RMSE_mu
-[1] 0.1025986
-> RMSE_sigma
-[1] 5.30026
-> RMSE_delta
-[1] 0.4615886
+# RMSE_xi 
+# [1] 0.1440237
+# > RMSE_mu
+# [1] 0.1025986
+# > RMSE_sigma
+# [1] 5.30026
+# > RMSE_delta
+# [1] 0.4615886
 ######################################
 
 #teste de robustes
 #bgumbel pacote
-install.packages("bgumbel")
+#install.packages("bgumbel")
 library("bgumbel")
 
 curve(pbgumbel(x,mu=-2,sigma=1,delta=1))
-curve(dbgumbel(x, mu = -2, sigma = 2, delta = -.7), xlim = c(-5, 10))
+curve(dbgumbel(x, mu = -2, sigma = 2, delta = -0.7), xlim = c(-5, 10))
 
 z<-as.vector(rbgumbel(500, mu = -2, sigma = 2, delta = -1))
 
@@ -425,7 +438,7 @@ box()
 curve(dbgumbel(x, mu = -2, sigma = 2, delta = -.8), xlim = c(-5, 10))
 curve(dbgevd(x, mu =-.5, sigma = 100, xi=1, delta = 2), xlim = c(-5, 10), lwd = 1, add = T, col = "blue")
 
-R       <- 50
+R<- 50
 n<-100
 
 muhat      = rep(NA, times = R)
@@ -435,8 +448,8 @@ deltahat   = rep(NA, times = R)
 
 starts <- c(-2, 1, 0.5, 1)
 starts <- c(mu, sigma, xi, delta)
-
 starts <- c(-.5, 100, 1, 2)
+
 for(k in (1:R)){
   Z <- as.vector(rbgumbel(50, mu = -2, sigma = 2, delta = -1))
   while(show_condition(suppressWarnings(optim(par= starts, fn = lik1, y=Z, method="BFGS")))[1]=="error"){
@@ -463,13 +476,13 @@ estimate_delta  <-   mean(deltahat,na.rm=TRUE) #2.198627
 curve(dbgumbel(x, mu = -2, sigma = 1.25, delta = -100), xlim = c(-5, 10))
 curve(dbgevd(x, mu =-.5, sigma = 100, xi=-11.5, delta =3 ), xlim = c(-5, 10), lwd = 1, add = T, col = "blue")
 
-R       <- 100
+R<- 100
 n<-100
 
-muhat      = rep(NA, times = R)
-sigmahat   = rep(NA, times = R)
-xihat      = rep(NA, times = R)
-deltahat   = rep(NA, times = R)
+muhat= rep(NA, times = R)
+sigmahat = rep(NA, times = R)
+xihat = rep(NA, times = R)
+deltahat = rep(NA, times = R)
 
 starts <- c(-.5, 100, -10, 3)
 for(k in (1:R)){
@@ -489,8 +502,6 @@ for(k in (1:R)){
 
 
 #tentar weibull
-
-
 estimate_xi     <-   mean(xihat,na.rm = TRUE)#0.3104895
 estimate_mu     <-   mean(muhat,na.rm=TRUE)#1.014193
 estimate_sigma  <-   mean(sigmahat,na.rm=TRUE)#12.24339

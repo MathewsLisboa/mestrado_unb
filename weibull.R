@@ -14,6 +14,8 @@ dbgevd <- function(y, mu, sigma, xi, delta){
   pdf    <- dgevd(T, mu, sigma, xi)*Tlinha#dgevd(T, 0, sigma, xi)*Tlinha
   return(pdf)
 }
+
+
 qbgevd   <- function(p, mu, sigma, xi, delta){
   quantile <- sign(qgevd(p, mu, sigma, xi))*(abs(qgevd(p, mu, sigma, xi))/sigma)^(1/(delta + 1))
   return(quantile)

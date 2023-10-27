@@ -128,7 +128,7 @@ legend(x=1.2, y=1.2, legend = c(expression(paste(delta, "= 0")), expression(past
        ,lwd = 1, col = c("black", "green", "blue","red"), cex=0.7, bty = "n")
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 ##### VAriando delta para qsi positivo %
 #  Negativo delta= -0.75, -0.5, 0.25, 0 e xi=0.5 negat,, mu=0, sigma=1 
 curve(dbgevd(x, mu = 0, sigma = 1, xi=0.5, delta = -0.75), xlim = c(-3, 4),
@@ -186,8 +186,6 @@ legend(x=1.2, y=1.2, legend = c(expression(paste(delta, "= 0")), expression(past
 
 
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 qbgevd   <- function(p, mu, sigma, xi, delta){
   quantile <- sign(qgevd(p, mu, sigma, xi))*(abs(qgevd(p, mu, sigma, xi))/sigma)^(1/(delta + 1))
   return(quantile)
@@ -371,24 +369,6 @@ deltahat400 <- deltahat
 
 boxplot(deltahatt50, deltahat100, deltahat200, deltahat400, xlab = "Sample size", ylab = "", names = c("50", "100", "200", "400"))
 abline(h=delta)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
