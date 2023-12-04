@@ -189,11 +189,9 @@ legend(x=1.2, y=1.2, legend = c(expression(paste(delta, "= 0")), expression(past
 
 ###############################################################################
 
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #QUANTIL
 qbgevd   <- function(p, mu, sigma, xi, delta){
-  quantile <- sign(qgevd(p, mu, sigma, xi))*(abs(qgevd(p, mu, sigma, xi)))^(1/(delta + 1)) + mu
+  quantile <- sign(qgevd(p, 0, sigma, xi))*(abs(qgevd(p, 0, sigma, xi)))^(1/(delta + 1)) + mu
   return(quantile)
 }
 
@@ -201,11 +199,11 @@ qbgevd   <- function(p, mu, sigma, xi, delta){
 # sigma <- 10
 # ## qgevd essa função equivale a essa expressão gigante aqui em que 
 # qbgevd(0.9, mu,sigma,xi,delta)
-# y <- 0.9
-# sign(-sigma*log(-log(y)))*(abs(-sigma*log(log(1/y)))^(1/(delta+1))) + mu
+y <- 0.9
+sign(-sigma*log(-log(y)))*(abs(-sigma*log(log(1/y)))^(1/(delta+1))) + mu
 ## essa é a função quantil da bigeb
 
-rdgevd <- function(n, mu, sigma, xi, delta){
+rbgevd <- function(n, mu, sigma, xi, delta){
   U <- runif(n)
   rnumber <- qbgevd(U, mu, sigma, xi, delta)
   return(rnumber)
@@ -218,24 +216,17 @@ sigma   <- 1
 xi      <- 0.5
 delta   <- 4
 
-
-Z <- rdgevd(n, mu, sigma, xi, delta)
+Z <- rbgevd(n, mu, sigma, xi, delta)
 
 x <- seq(min(Z), max(Z), 0.01)
 hist(Z,freq = FALSE,main="",xlab="x",ylab="Density",lwd=2)
 lines(x,dbgevd(x, mu, sigma, xi, delta),lty=1,lwd=2)###########################
 
-
-box()
-sigma <- 0
-sigma <- ifelse(sigma>0,sigma,1)
-
-
 lik1 <- function(theta, y){
   
   par_len <- length(theta)
   mu      <- theta[1]
-  sigma   <- ifelse(theta[2]>0,theta[2],1)
+  sigma   <- ifelse(theta[2]>0,theta[2],1^-10)
   xi      <- theta[3]
   delta   <- theta[4]
  
@@ -243,28 +234,24 @@ lik1 <- function(theta, y){
   T      <- (y-mu)*(abs(y-mu)^delta)#*sigma
   dbgevd_l <- dgevd(T, mu, sigma, xi)*Tlinha
   
-  logl <- sum(dbgevd_l)####
+  logl <- sum(log(dbgevd_l))####
   return(-logl)
 }
-n       <- 10^3
+
+n       <- 10^4
 mu      <- 0
-sigma   <- 1
-xi      <- 0.5
-delta   <- 2
+sigma   <- 2
+xi      <- -1
+delta   <- 1
 
 
-Z <- rdgevd(n, mu, sigma, xi, delta)
+Z <- rbgevd(n, mu, sigma, xi, delta)
 hist(Z,freq = FALSE,main="",xlab="x",ylab="Density",lwd=2)
-y <- Z
-Tlinha <- (delta + 1)*(abs(y-mu)^delta)#*sigma
-T      <- (y-mu)*(abs(y-mu)^delta)#*sigma
-dbgevd_l <- dgevd(T, mu, sigma, xi)*Tlinha
-hist(dbgevd_l)
-sum(log(dbgevd_l))
-
 x <- seq(min(Z), max(Z), 0.01)
 hist(Z,freq = FALSE,main="",xlab="x",ylab="Density",lwd=2)
-lines(x,dbgevd(x, mu, sigma, xi, delta),lty=1,lwd=2)###########################
+lines(x,dbgevd(x, mu, sigma, xi, delta),lty=1,lwd=2)
+
+###########################
 
 starts <- c(mu,sigma, xi, delta)
 
@@ -280,15 +267,12 @@ test$par
 #xi = -0.5 and 0.5
 #delta -0.5, 0, 0.3, 1, 2
 
-R       <- 500
-n       <- 50
+R       <- 10^3
+n       <- 10^2
 mu      <- 0
-sigma   <- 10
-xi      <- 0
-delta   <- 2
-
-xi
-
+sigma   <- 2
+xi      <- -1
+delta   <- 1
 
 muhat      = rep(NA, times = R)
 sigmahat   = rep(NA, times = R)
@@ -312,9 +296,6 @@ for(k in (1:R)){
 warnings()
 ################################################################################################
 
-
-muhat
-
 show_condition <- function(code) {
   tryCatch(code,
            error = function(c) "error",
@@ -322,13 +303,6 @@ show_condition <- function(code) {
            message = function(c) "message"
   )}
 show_condition(optim(par= starts, fn = lik1, y=Z, method="BFGS"))=="error"
-
-suppressWarnings(optim(par= starts, fn = lik1, y=Z, method="BFGS"))
-
-R       <- 10;n       <- 50;mu      <- 1;sigma   <- 10
-xi      <- 0.3
-delta   <- 2
-
 
 muhat      = rep(NA, times = R)
 sigmahat   = rep(NA, times = R)
@@ -355,6 +329,7 @@ for(k in (1:10)){
 
 
 sum(is.na(muhat))
+
 estimate_xi     <-   mean(xihat,na.rm = TRUE)#0.3104895
 estimate_mu     <-   mean(muhat,na.rm=TRUE)#1.014193
 estimate_sigma  <-   mean(sigmahat,na.rm=TRUE)#12.24339
@@ -397,13 +372,13 @@ RB_delta
 # [1] 0.09931359
 ################################
 
-RMSE_xi    <- sqrt(var(xihat)     +  (estimate_xi - xi)^2   )
-RMSE_mu    <- sqrt(var(muhat)     +  (estimate_mu - mu)^2   )
-RMSE_sigma <- sqrt(var(sigmahat)  +  (estimate_sigma - sigma)^2   )
-RMSE_delta <- sqrt(var(deltahat)  +  (estimate_delta - delta)^2  )
+RMSE_xi    <- sqrt(var(xihat)     +  (estimate_xi - xi)^2)
+RMSE_mu    <- sqrt(var(muhat)     +  (estimate_mu - mu)^2)
+RMSE_sigma <- sqrt(var(sigmahat)  +  (estimate_sigma - sigma)^2)
+RMSE_delta <- sqrt(var(deltahat)  +  (estimate_delta - delta)^2)
 
 
-RMSE_xi 
+RMSE_xi
 RMSE_mu
 RMSE_sigma
 RMSE_delta
@@ -448,7 +423,7 @@ deltahat   = rep(NA, times = R)
 
 starts <- c(-2, 1, 0.5, 1)
 starts <- c(mu, sigma, xi, delta)
-starts <- c(-.5, 100, 1, 2)
+starts <- c(-.5, 2, 1, 2)
 
 for(k in (1:R)){
   Z <- as.vector(rbgumbel(50, mu = -2, sigma = 2, delta = -1))
@@ -471,7 +446,7 @@ estimate_mu     <-   mean(muhat,na.rm=TRUE)#1.014193
 estimate_sigma  <-   mean(sigmahat,na.rm=TRUE)#12.24339
 estimate_delta  <-   mean(deltahat,na.rm=TRUE) #2.198627
 
-
+starts
 ##########################################
 curve(dbgumbel(x, mu = -2, sigma = 1.25, delta = -100), xlim = c(-5, 10))
 curve(dbgevd(x, mu =-.5, sigma = 100, xi=-11.5, delta =3 ), xlim = c(-5, 10), lwd = 1, add = T, col = "blue")
@@ -585,3 +560,5 @@ estimate_xi     <-   mean(xihat,na.rm=T)
 estimate_mu     <-   mean(muhat,na.rm=T)
 estimate_sigma  <-   mean(sigmahat,na.rm=T)
 estimate_delta  <-   mean(deltahat,na.rm=T) 
+
+
