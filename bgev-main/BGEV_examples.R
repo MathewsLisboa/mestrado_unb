@@ -15,11 +15,13 @@ dbgev(.5,mu=1, sigma=10, xi=0.3, delta=2)
 #[1] 0.02748573
 # The 90'th percentile of a bimodal generalized extreme value distribution
 
-sigma <- 10
+sigma <- 1
 xi <- 0
-delta <- 2
-mu <- 1
-y <- 0.9
+delta <- 3
+mu <- 2
+y <- 0.3
+
+
 
 qbgev(.9,mu=1, sigma=10, xi=xi, delta=2)
 qbgevd(.9,mu=1, sigma=10, xi=-xi, delta=2)

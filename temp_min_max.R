@@ -18,7 +18,7 @@ test <-optim(par= starts, fn = likbgev, y=Z, method="BFGS")
 
 test$par
 
-library(evd)
+
 # library(VGAM)
 # library(fExtremes)
 
@@ -85,9 +85,12 @@ test <- optim(par=starts,fn=likbgev,y=Z2,method = 'BFGS',hessian = T)
 test$par
 
 
-hist(Z2, 20,probability = T)
+hist(Z2,20,probability = T)
 x <- seq(min(Z2), max(Z2), 0.01)
 lines(x, dbgev(x,mu=test$par[1],sigma=test$par[2], xi = test$par[3], delta= test$par[4]))
+lines(x,dgev(x, loc=8.9407448, scale = 5.7027691, shape = -0.6542575), col='red')
+
+
 
 starts <- c(mu=mean(Z2),sigma=var(Z2) , xi=fit@fit$par.ests[1], delta=0.5)
 test <- optim(par=starts,fn=likbgev,y=Z2,method = 'BFGS',hessian = T)
@@ -98,7 +101,9 @@ max(Z2)
 min(Z2)
 mean(Z2)
 var(Z2)
+
 fit <- fExtremes::gevFit(Z2, type = 'mle')
+
 
 
 # invR<-solve(v1$hessian)

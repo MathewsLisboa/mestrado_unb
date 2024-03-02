@@ -1,0 +1,276 @@
+\documentclass[pdftex,11pt]{article}%
+\usepackage[pdftex]{hyperref}%
+\usepackage[pdftex]{graphicx}%
+\usepackage[normalem]{ulem}
+\usepackage{amsmath,amsthm,amsfonts,
+	amsbsy,amssymb,upref,enumerate,bigstrut,
+	color,mathtools,mathrsfs,float,bm,dsfont}
+%\usepackage{refcheck}
+\usepackage{lipsum}
+\usepackage{stmaryrd, url}
+\usepackage{authblk,subfigure} % author and affiliations
+
+\newcommand\T{\rule{0pt}{2.6ex}}
+\newcommand\B{\rule[-1.2ex]{0pt}{0pt}}
+\usepackage[left=1.0in,top=1.3in,right=0.8in]{geometry}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{acknowledgement}{Acknowledgement}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{example}{Example}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\numberwithin{equation}{section} % requires amsmath
+\newcommand{\nto}{\mbox{$\;\rightarrow_{\hspace*{-0.3cm}{\small n}}\;$~}}
+\newcommand{\ntop}{\mbox{$\;{\to}^{^{\hspace*{-0.3cm}{\small p}}}\;$~}}
+\newcommand{\ntod}{\mbox{$\;{\to}^{^{\hspace*{-0.3cm}{\small d}}}\;$~}}
+\newcommand{\lto}{\mbox{$\;\rightarrow_{\hspace*{-0.3cm}{\tiny\tiny{l}}}\;$~}}
+
+\makeatletter
+\def\@seccntformat#1{\@ifundefined{#1@cntformat}%
+	{\csname the#1\endcsname\quad}%      default
+	{\csname #1@cntformat\endcsname}%    enable individual control
+}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+	
+	A função densidade de probabilidade de uma variável aleatória GEV; $Y \sim F_{\xi, \sigma, \mu}$ é dada por: 
+	
+	\begin{equation}
+		f_{\xi, \mu, \sigma}(y)=
+			\begin{cases}
+			\dfrac{1}{\sigma} \left[ 1+ \xi \left(\dfrac{y-\mu}{\sigma}\right) \right]^{(-1/\xi) -1} \exp\left\{- \left[1+\xi\left(\dfrac{y-\mu}{\sigma}\right)\right]^{-1/\xi}\right\} ,& \text{se } \xi \ne 0 \\
+			\dfrac{1}{\sigma} \exp \left\{ - \left(  \dfrac{y-\mu}{\sigma}\right)  - \exp \left[ - \left(  \dfrac{y-\mu}{\sigma}\right)  \right]  \right\},              & \text{se }  \xi = 0 ,
+		\end{cases}
+		\label{eq:pdf_gev}  
+	\end{equation}
+sendo $\xi$ parâmetro de forma, $\mu$ de locação e $\sigma$ de escala.
+
+\
+
+O modelo GEV bimodal, denotado por BGEV,  consiste em compor a distribuição de  uma variável aleatória GEV com parãmetro de locação $\mu=0$, $Y \sim F_{\xi, 0,\sigma}$, com a transformação $T_{\mu, \delta}$ definida abaixo. Assim a função de distribuição acumulada de uma variável aleatória BGEV; $X \sim F_{BG_{\xi, \mu, \sigma, \delta}}$, é dada por:
+
+\begin{equation}
+	F_{BG_{\xi,\mu,\sigma, \delta}}(x) =  F_{\xi, 0, \sigma}(T_{\mu, \delta}(x)),
+	\label{eq:fda_bgev1}
+\end{equation}
+em que a função $T_{\mu, \delta}$ é definida por:
+
+\begin{equation}
+	T_{\mu, \delta}(x)=\left(  x - \mu  \right) \left| x -\mu \right| ^{\delta}, \delta > -1, \mu \in \mathbb{R}.
+	\label{eq:T_transformacao}
+\end{equation}
+Além disso a função $T$ é inversível, com a inversa dada por: 
+
+
+\begin{equation}
+	T^{-1}_{\mu, \delta}(x) = sng(x) |x|^{\dfrac{1}{\left( \delta +1 \right) }} + \mu.
+	\label{eq:T_inversa}
+\end{equation}
+E também derivável sendo que a derivada tem a seguinte forma: 
+
+\begin{equation}
+	T'_{\mu, \delta}(x) = (\delta + 1 ) |x - \mu|^{\delta}.
+	\label{eq:T_derivada}
+\end{equation}
+
+
+A função de densidade de probabilidade   de $X\sim F_{BG_{\xi,\mu,\sigma, \delta}} $  é dada por
+
+\begin{eqnarray}
+	f_{BG_{\xi,\mu,\sigma, \delta}} (x)= \begin{cases}
+		\dfrac{1}{\sigma} \left[ 1+ \xi \left(\dfrac{T_{\mu, \delta}(x)}{\sigma}\right) \right]^{(-1/\xi) -1} \exp\left[- \left[1+\xi\left(\dfrac{T_{\mu, \delta}(x)}        {\sigma}\right)\right]^{-1/\xi}\right] T'_{\mu, \delta}(x)
+		, & \xi \neq 0 \\
+		\dfrac{1}{\sigma} \exp \left( - \dfrac{T_{\mu, \delta}(x)}{\sigma} \right) \exp \left[- \exp \left( - \dfrac{T_{\mu, \delta}(x)}{\sigma}\right)  \right] T'_{\mu, \delta}(x), &  \xi=0.
+	\end{cases}
+	\label{eq:fdp_bgev2}
+\end{eqnarray}
+
+Neste modelo são parâmetros de forma $\xi$, $\delta$ e $\sigma$ já $\mu$ é parâmetro de locação. Note que $\sigma$ na distribuição base GEV é de escala, porém na distribuição BGEV não satisfaz a condição $f_{BG_{\xi,\mu,\sigma, \delta}}(x)=\frac{1}{\sigma}f_{BG_{\xi,\mu,1, \delta}}(\frac{1}{\sigma})$, pois $\frac{T_{\mu, \delta}(x)}{\sigma} \neq T_{\mu, \delta}(\frac{x}{\sigma})$.  A prova que $\mu$ na distribuição  BGEV é um parâmetro de locação segue do fato que $T_{\mu, \delta}(x)=T_{0, \delta}(x-\mu)$ e em consequência 
+$f_{BG_{\xi,\mu,\sigma, \delta}}(x) = f_{BG_{\xi,0,\sigma, \delta}}(x-\mu)$.
+\vspace{1cm}
+\\
+\textbf{Observação 1.} Note que quando $\delta=0$ em (\ref{eq:fda_bgev1})  a distribuição BGEV retorna para a distribuição base GEV, $X\sim F_{BG_{\xi,\mu,\sigma, 0}}= F_{\xi,\mu,\sigma}  $. De fato
+
+\begin{eqnarray}
+	F_{BG_{\xi,\mu,\sigma, 0}}(x) &=& F_{\xi, 0, \sigma}(x-\mu) \nonumber\\
+	&=& F_{\xi, \mu, \sigma}(x).
+\end{eqnarray}
+
+	\textbf{Momentos}\\
+	Conforme  Abramowitz   e Stegun (1965),  para todo número $a \in \mathrm{R}^{+}$, As funções gamma, gamma incompleta superior e gamma incompleta inferior são definidas, respectivamente, por 
+	\begin{eqnarray}
+		\Gamma(a)&:=\int\limits_{0}^{\infty}t^{a-1}e^{-t}dt \label{Gama}
+		\\
+		\Gamma{(a,x)}&:= \int_{x}^{\infty}t^{a-1}e^{-t}dt \label{GammaSup} 
+	\end{eqnarray}
+	e
+	\begin{eqnarray}
+		\gamma{(a,x)}&:= \int_{0}^{x}t^{a-1}e^{-t}dt\label{GammaInf}.
+	\end{eqnarray}
+	Estas funções são algumas das ferramentas que serão utilizadas na  seguinte proposição. Em todos os casos $a$ é um parâmetro complexo, tal que a parte real de $a$ é positiva.
+	
+	\textcolor{red}{
+		Abramowitz, M., Stegun, I.A.(1965) Handbook of Mathematical Functions: With Formulas, Graphs, and Mathematical Tables. Dover Publications, Edição	9th Edição.
+	}
+	\vspace{1cm}\\
+	%%%%%%%%%%%%%%%%%%%%%%% Prop 1%%%%%%%%%%%%%%%%%%
+	\textbf{Proposição 1.}
+	Seja $X\sim F_{BG_{\xi,\mu,\sigma, \delta}}$. Então o $k$ é-simo   momento inteiro  de $X$ é  dado por:
+	
+	\begin{eqnarray}\label{momentxi>}
+		E(X^k)&=&\sum_{j=0}^{k}\binom{k}{j} (-1)^{\frac{(k-j)(\delta+2)}{\delta+1}} \left(\frac{\sigma}{\xi}\right)^{\frac{k-j}{\delta+1}} \left[ \sum_{i=0}^{\lbrack| \frac{k-j}{\delta+1} | \rbrack} \binom{\lbrack | \frac{k-j}{\delta+1} | \rbrack}{i}(-1)^{i} \gamma \left(1-\xi \left( \lbrack | \frac{k-j}{\delta+1} | \rbrack -i \right), 1 \right)\right] \nonumber\\
+		&+& \sum_{j=0}^{k}\binom{k}{j} \left(\frac{\sigma}{\xi}\right)^{\frac{k-j}{\delta+1}} \left[ \sum_{i=0}^{\lbrack| \frac{k-j}{\delta+1} | \rbrack} \binom{\lbrack | \frac{k-j}{\delta+1} | \rbrack}{i}(-1)^{i} \Gamma \left(1-\xi \left( \lbrack | \frac{k-j}{\delta+1} | \rbrack -i \right), 1 \right) \right],
+	\end{eqnarray}
+	para $\xi> 0$, sempre que $\xi<\frac{\delta+1}{k}$ e
+	\begin{eqnarray}\label{momentxi<}
+		E(X^k)&=&\sum_{j=0}^{k}\binom{k}{j} (-1)^{\frac{(k-j)(\delta+2)}{\delta+1}} \left(\frac{\sigma}{\xi}\right)^{\frac{k-j}{\delta+1}} \left[ \sum_{i=0}^{\lbrack| \frac{k-j}{\delta+1} | \rbrack} \binom{\lbrack | \frac{k-j}{\delta+1} | \rbrack}{i}(-1)^{i} \Gamma \left(1-\xi \left( \lbrack | \frac{k-j}{\delta+1} | \rbrack -i \right), 1 \right) \right] \nonumber\\
+		&+& \sum_{j=0}^{k}\binom{k}{j} \left(\frac{\sigma}{\xi}\right)^{\frac{k-j}{\delta+1}} \left[ \sum_{i=0}^{\lbrack| \frac{k-j}{\delta+1} | \rbrack} \binom{\lbrack | \frac{k-j}{\delta+1} | \rbrack}{i}(-1)^{i} \gamma \left(1-\xi \left( \lbrack | \frac{k-j}{\delta+1} | \rbrack -i \right), 1 \right) \right],
+	\end{eqnarray}
+	para $\xi< 0$, sempre que $\xi<\frac{\delta+1}{k}$.
+	%\[
+	%E\left(Y^{\frac{k-j}{\delta+1}} I_{[Y< 0]} \right), \ \  E\left(Y^{\frac{k-j}{\delta+1}} I_{[Y\geq 0]}\right)
+	%\]
+	\\
+	\textbf{Prova.} Por definição
+	\begin{eqnarray}\label{m1}
+		E(X^k)&=& \int_{-\infty}^{+\infty} x^k f_{GEV_{\xi, 0, \sigma}}\left( T_{\mu, \delta}(x)\right) T'_{\mu, \delta}(x) dx, 
+	\end{eqnarray}
+	sendo $f_{GEV_{\xi, 0, \sigma}}$ como definida em (\ref{eq:pdf_gev}), $T$ como em (\ref{eq:T_transformacao}), e $T'$ em (\ref{eq:T_derivada}). Ao substituir  $y=  T_{\mu, \delta}(x)$ em (\ref{m1}), os momentos são expressos por
+	
+	\begin{eqnarray}\label{m2}
+		E(X^k)&=& \int_{-\infty}^{+\infty} [ sng(y)|y|^{\frac{1}{\delta+1}}+\mu]^k f_{GEV_{\xi, 0, \sigma}}(y)dy. 
+	\end{eqnarray}
+	Como $k\in \mathrm{Z^+}$, utiliza-se a fórmula do Binómio de Newton, então (\ref{m2}) é atualizada pela integral
+	
+	\begin{eqnarray}\label{m3}
+		E(X^k)&=& \sum_{j=0}^{k} \binom{k}{j} \mu^{j} \left[ \int_{-\infty}^{+\infty} [ sng(y)]^{k-j}
+		|y|^{\frac{k-j}{\delta+1}} f_{GEV_{\xi, 0, \sigma}}(y)dy\right]\nonumber\\
+		&=&  \sum_{j=0}^{k} \binom{k}{j} \mu^{j} (-1)^{\frac{(k-j)(\delta+2)}{\delta+1}} E\left(Y^{\frac{k-j}{\delta+1}}I_{[Y<0]}\right)
+		+  \sum_{j=0}^{k} \binom{k}{j} \mu^{j} E\left(Y^{\frac{k-j}{\delta+1}}I_{[Y\geq 0]}\right),
+	\end{eqnarray}
+	sendo $Y\sim F_{GEV_{\xi, 0, \sigma}}$ e $I_A$ é a função indicadora do conjunto $A$;  $I_{A}(\omega)=1$ se $\omega \in A$ e $I_{A}(\omega)=0$  caso contrário.
+	Agora precisam-se analisar os casos $\xi>0$ e  $\xi<0$.
+	
+	\textbf{Caso $\xi>0$}. Ao utilizar a expressão (\ref{eq:pdf_gev}) em (\ref{m3}) e a substituição $t=\left[1+\frac{\xi}{\sigma}y\right]^{-\frac{1}{\xi}}$, para $r=[|\frac{k-j}{\delta+1}|] $, segue que
+	\begin{eqnarray}\label{m4}
+		E(Y^k I_{[Y\geq 0]})&=&\int_{0}^{+\infty}y^{r}\frac{1}{\sigma}\left[1+\frac{\xi}{\sigma}y \right]^{-\frac{1}{\xi}-1} \exp \left\{-\left[1+\frac{\xi}{\sigma}y\right]^{-\frac{1}{\xi}}\right\} dy\nonumber\\
+		&=&\int_{1}^{+\infty} \left( \frac{\sigma}{\xi} t^{-\xi}- \frac{\sigma}{\xi}\right)^{r}e^{-t}  dt.
+	\end{eqnarray}
+	Em (\ref{m4}), novamente,  utiliza-se o Binómio de Newton  e obtem-se
+	\begin{eqnarray}\label{m5}
+		E(Y^k I_{[Y\geq 0]})
+		&=& \sum_{i=0}^{r} \binom{r}{i}(-1)^{i} \left( \frac{\sigma}{\xi}\right)^{r} \int_{1}^{+\infty} t^{-\xi (r-i)}  e^{-t} dt.
+	\end{eqnarray}
+	Da mesma forma é obtido  o $k$-ésimo momento  de $Y$ truncado na parte negativa
+	\begin{eqnarray}\label{m6}
+		E(Y^k I_{[Y < 0]})&=&\int_{-\frac{\sigma}{\xi}}^{0}y^{r}\frac{1}{\sigma}\left[1+\frac{\xi}{\sigma}y \right]^{-\frac{1}{\xi}-1} \exp \left\{-\left[1+\frac{\xi}{\sigma}y\right]^{-\frac{1}{\xi}}\right\}dy \nonumber\\
+		&=&\int_{0}^{1} \left( \frac{\sigma}{\xi} t^{-\xi}- \frac{\sigma}{\xi}\right)^{r}e^{-t}  dt \nonumber\\
+		&=& \sum_{i=0}^{r} \binom{r}{i}(-1)^{i} \left( \frac{\sigma}{\xi}\right)^{r} \int_{0}^{1} t^{-\xi (r-i)}  e^{-t} dt.
+	\end{eqnarray}
+	A  função gamma incompleta inferior (\ref{GammaInf}) e gamma incompleta superior (\ref{GammaSup}) são utilizadas para representar as integrais de  (\ref{m5}) e (\ref{m6}), respectivamente. Com isto, a prova de (\ref{momentxi>}) segue ao substituir essas atualizações  na equação (\ref{m2}).
+	
+	
+	\textbf{Caso $\xi<0$.} Repete-se o mesmo procedimento que para o caso $\xi>0$  respeitando o suporte da densidade de  $Y\sim F_{GEV_{\xi, 0, \sigma}}$ que é dada por (\ref{eq:pdf_gev}) para os valores $\{y: y\in (-\infty -\frac{\sigma}{\xi}]\}$.
+\\
+\vspace{1cm}\\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Corol 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\textbf{Corolário 1.} 
+Seja $X\sim F_{BG_{\xi,\mu,\sigma, 0}}=F_{\xi,\mu,\sigma}$. Então o $k$ é-simo  momento inteiro  de $X$ é  dado por:
+\begin{eqnarray}
+E(X^k)&=& \sum_{j=0}^{k} \binom{k}{j} \mu^{j} \left( \frac{\sigma}{\xi}\right)^{k-j}\Gamma(1-\xi (k-j)).
+\end{eqnarray}
+\textbf{Prova}. De (\refeq{m3}), quando $\delta=0$, obtem-se
+
+\begin{eqnarray}
+ 	E(X^k)&=&  \sum_{j=0}^{k} \binom{k}{j} \mu^{j} E\left(Y^{k-j}\right) \nonumber\\
+ 	      &=& E\left(\sum_{j=0}^{k} \binom{k}{j} \mu^{j} Y^{k-j}\right) \nonumber\\
+ 	      &=& E(Y+\mu )^k,
+\end{eqnarray}
+em que $Y+\mu \sim F_{\xi, \mu, \sigma}$, pois $Y\sim F_{xi, 0, \sigma}$. A prova é finalizada com as expressões (\ref{m5}) e (\ref{m6}) e o fato que $\Gamma(x,s)+\gamma(x,s)=\Gamma(x)$.	
+\\
+\vspace{1cm}\\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Corol 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\textbf{Corolário 2.}  
+Seja $X\sim F_{BG_{\xi,\mu,\sigma, \delta}}$. Então, para $\xi>0$, a esperança de  $X$ é  dado por:
+
+\begin{eqnarray}\label{mediaxi>}
+	E(X)&=& (-1)^{\frac{\delta+2}{\delta+1}} \left(\frac{\sigma}{\xi}\right)^{\frac{1}{\delta+1}} \left[ \sum_{i=0}^{1} \binom{1}{i}(-1)^{i} \gamma \left(1-\xi \left( 1 -i \right), 1 \right)\right] \nonumber\\
+	&+&   \left(\frac{\sigma}{\xi}\right)^{\frac{1}{\delta+1}} \left[ \sum_{i=0}^{1} \binom{1}{i}(-1)^{i} \Gamma \left(1-\xi \left( 1 -i \right), 1 \right)\right]
+\end{eqnarray}
+e para $\xi< 0$  a esperança de  $X$ é  dado por:
+\begin{eqnarray}\label{mediaxi<}
+	E(X)&=& (-1)^{\frac{\delta+2}{\delta+1}} \left(\frac{\sigma}{\xi}\right)^{\frac{1}{\delta+1}} \left[ \sum_{i=0}^{1} \binom{1}{i}(-1)^{i} \Gamma \left(1-\xi \left( 1 -i \right), 1 \right)\right] \nonumber\\
+	&+&   \left(\frac{\sigma}{\xi}\right)^{\frac{1}{\delta+1}} \left[ \sum_{i=0}^{1} \binom{1}{i}(-1)^{i} \gamma \left(1-\xi \left( 1 -i \right), 1 \right)\right].
+\end{eqnarray}
+\vspace{1cm}\\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Prop 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\textbf{Proposição 2.}
+Seja $X\sim F_{BG_{\xi,\mu,\sigma, \delta}}$, $\xi=0$. Então a função geratriz de momentos de  $X$ é  dado por:
+
+\begin{eqnarray}\label{fgm}
+	M_{X} (t)={e^{\mu t}} \sum_{k=0}^{\infty} \frac{t^{k}}{k!} \left[(-1)^{\frac{k(\delta+2)}{\delta+1}}   E\left(Y^{\frac{k}{\delta+1}} I_{[Y<0]}\right)
+	 + E\left(Y^{\frac{k}{\delta+1}} I_{[Y\geq 0]}\right)\right],
+\end{eqnarray}
+$Y\sim F_{\xi, 0, \sigma}$, $\xi=0$.
+\\
+\textbf{Prova.}
+Por definição tem-se que
+
+\begin{eqnarray}\label{fgm1}
+M_{X} (t)=\int_{-\infty}^{+\infty}  \frac{1}{\sigma} \exp\{tx \}\exp\left\{ -\frac{T_{\mu, \delta}(x)}{\sigma}-\exp \left[-\frac{T_{\mu, \delta}(x)}{\sigma}  \right]	\right\} dx.
+\end{eqnarray}
+Ao usar a substituição $y=T_{\mu, \delta}(x)$ em (\ref{fgm1})
+ e o fato que $x=sng(\ln y^{-\sigma} )|\ln y^{-\sigma}|^{\frac{1}{\delta+1}}+\mu $ obstem-se
+ \begin{eqnarray}\label{fc2}
+ 	M_{X} (t)= e^{\mu t} \int_{0}^{+\infty} \exp\left\{sng(\ln y^{-\sigma} )|\ln y^{-\sigma}|^{\frac{1}{\delta+1}} t	\right\} \exp\{ -y \} dy.
+ \end{eqnarray}
+ A nova substituição $s=\ln(y^{-\sigma})$ permite atualizar (\ref{fgm2}) por
+ 
+ \begin{eqnarray}\label{fgm3}
+ 	M_{X} (t)= \frac{e^{\mu t}}{\sigma} \int_{-\infty}^{+\infty} \exp\left\{sng(s )|s|^{\frac{1}{\delta+1}} t	\right\} \exp\left\{ - \frac{s}{\sigma}- \exp\left[-\frac{s}{\sigma}\right] \right\} dy.
+ \end{eqnarray}
+ 
+Para finalizar a prova utiliza-se a representação em série da função exponencial. Assim (\ref{fgm3}) é re-escrita pela equação
+ \begin{eqnarray}\label{fgm4}
+	M_{X} (t) &=& {e^{\mu t}} \sum_{k=0}^{-\infty} \frac{t^k}{k!}(-1)^{\frac{k(\delta+2)}{\delta+1}}  \int_{-\infty}^{0}\frac{1}{\sigma} s^{\frac{k}{\delta+1}} \exp\left\{ - \frac{s}{\sigma}- \exp\left[-\frac{s}{\sigma}\right] \right\} ds \nonumber\\
+	&+& {e^{\mu t}} \sum_{k=0}^{-\infty}\frac{t^k}{k!}  \int_{0}^{+\infty} \frac{1}{\sigma} s^{\frac{k}{\delta+1}} \exp\left\{ - \frac{s}{\sigma}- \exp\left[-\frac{s}{\sigma}\right] \right\} ds.\nonumber
+\end{eqnarray}
+\vspace{1cm}\\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Corol 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\textbf{Corolário 3.}
+Seja $X\sim F_{BG_{\xi,\mu,\sigma, 0}}=F_{\xi,\mu,\sigma}$. Então a função geratriz de momwntoa de $X$ é  dada por:
+\begin{eqnarray}
+	M_{X} (t)=e^{\mu t} \Gamma (1-\sigma t).
+\end{eqnarray}
+\textbf{Prova.}
+Quando $\delta=0$ a expressão (\ref{fgm}) se reduz a 
+\begin{eqnarray}\label{fgm5}
+	M_{X} (t)&=&{e^{\mu t}} \sum_{k=0}^{\infty} \frac{t^{k}}{k!}    E\left(Y^{\frac{k}{\delta+1}}\right) \nonumber\\
+		     &=&{e^{\mu t}}  E\left( \sum_{k=0}^{\infty} \frac{(tY)^{k}}{k!} \right)  \nonumber\\
+		     &=&{e^{\mu t}}  E\left( e^{tY} \right)\nonumber\\
+		     &=&{e^{\mu t}} \Gamma(1-\sigma t). \nonumber
+\end{eqnarray}
+\vspace{1cm}\\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Corol 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\textbf{Corolário 4.}  
+Seja $X\sim F_{BG_{\xi,\mu,\sigma, \delta}}$,com $\xi>0$. Então, a esperança de  $X$ é  dado por:
+\begin{eqnarray}
+	E(X)=\mu E \left( Y^{\frac{1}{\delta+1}}\right) +(-1)^{\frac{\delta+2}{\delta+1}}E \left( Y^{\frac{1}{\delta+1}}I_{[Y<0]} \right) + E \left( Y^{\frac{1}{\delta+1}} I_{Y\geq 0} \right),
+\end{eqnarray}
+
+$Y\sim F_{\xi, 0, \sigma}$, $\xi=0$.
+\\
+\textbf{Prova.}
+A prova é direta ao avaliar a derivada de (\ref{fgm}) em $t=0$. 
+
+\end{document}

@@ -12,6 +12,7 @@
 
 
 library(EnvStats)
+library(evd)
 
 
 #----------------------------------------------------------------------
@@ -44,8 +45,6 @@ dbgev <- function(y, mu = 1, sigma = 1, xi = 0.3, delta = 2){
     pdf
 }
 #----------------------------------------------------------------------
-
-
 
 
 #----------------------------------------------------------------------
@@ -126,7 +125,7 @@ likbgev <- function(y, theta = c(1, 2, 0.3, 2)){
   mu      <- theta[1]
   sigma   <- ifelse(theta[2]>0, theta[2], 0.00001)
   xi      <- theta[3]
-  delta   <- theta[4]
+  delta   <- ifelse(theta[4]>0, theta[4], 0)
   
   # Error treatment of input parameters
   # if(length(theta)!=4){

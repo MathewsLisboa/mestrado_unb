@@ -12,7 +12,7 @@ ler_inmet <- function(x){
 ##A002 GOIÂNIA 
 ##A001 Brasília
 ##A899 Santa Palma RS (centro Eólico)
-##A426 guanambi (centro eólico)
+##A426 Guanambi (centro eólico)
 
 
 #### leitura de dados ####
@@ -100,9 +100,7 @@ temp2$max_orvalho %>% hist(20)
 
 temp2$max_orvalho %>% density() %>% plot()
 
-
-
-
+saveRDS(df, file = 'D:\\Users\\Mathews\\Documents\\Git\\mestrado_unb/dados_resumidos/dados_originais.rds')
 
 
 #### TEMPERATURA BULBO SECO MÉDIA SEM DIÁRIA ANTES ####
@@ -121,7 +119,7 @@ for (i in 1:tau){
 MI <- MI[is.na(MI)==F]
 acf(MI)
 pacf(MI)
-hist(MI)
+hist(MI,20)
 plot(density(MI))
 
 
@@ -135,10 +133,7 @@ for (i in 1:tau){
   j<-j+n }
 
 mi <- mi[is.na(mi)==F]
-acf(mi)
-
-par(mfrow = c(2,1))
-hist(mi, main = 'MÍNIMO DA TEMPERATURA MÉDIA DIÁRIA')
+hist(mi)
 plot(density(mi), main = '')
 
 ## mistura
@@ -149,8 +144,34 @@ plot(density(c(mi,MI))) ## acho que ficou bem ruim
 
 temp <- df %>% group_by(Data= Data) %>% summarise(temp = mean(TEMPERATURA.DO.AR...BULBO.SECO..HORARIA...C., na.rm = T))
 
+n <- 2
+N <- length(temp$temp)
 High <- temp$temp
-N<-length(High)  ; n<-60
+result <- data.frame() 
+
+for (k in 1:100) {  
+  n<-k  
+  tau<-floor(N/n)  
+  m<-numeric(tau) ; j<-1
+  for (i in 1:tau){   
+    m[i]<-max(High[j:(j+n-1)])    
+    j<-j+n }    
+  m<-m[-1]    
+  teste<-Box.test(m, lag = 1,              
+                  type = c("Box-Pierce", "Ljung-Box"), 
+                  fitdf = 0)    
+  teste$indice <- k   
+  teste <- c(teste$indice,teste$p.value)
+  result <- rbind(result, teste)
+}
+
+result <- tibble(result)
+names(result) <- c("Tamanho do bloco","P-valor (teste de Ljung-Box)")
+
+
+
+High <- temp$temp
+N<-length(High)  ; n<-65
 tau<-floor(N/n)
 MI<-numeric(tau) ; j<-1
 
@@ -160,11 +181,11 @@ for (i in 1:tau){
 
 MI <- MI[is.na(MI)==F]
 acf(MI)
-hist(MI)
+hist(MI,20)
 plot(density(MI))
 
 High <- temp$temp
-N<-length(High)  ; n<-60
+N<-length(High)  ; n<-65
 tau<-floor(N/n)
 mi<-numeric(tau) ; j<-1
 
@@ -246,6 +267,7 @@ hist(MI)
 plot(density(MI))
 
 
+
 High <- temp$temp
 N<-length(High)  ; n<-60
 tau<-floor(N/n)
@@ -263,9 +285,6 @@ plot(density(mi))
 #### mistura
 hist(c(mi,MI))
 plot(density(c(mi,MI))) ### acho que ficou ruim 
-
-
-
 
 
 
@@ -351,7 +370,13 @@ plot(density(c(mi,MI))) ### acho que ficou ruim
 
 
 
+
 #### TEMPERATURA DO ORVARLHO SEM FAZER DIÁRIA ####
+
+
+hist(temp_orvalho)
+plot(temp_orvalho, type='l')
+acf(temp_orvalho[is.na(temp_orvalho)==F])
 
 
 temp_orvalho <- df$TEMPERATURA.DO.PONTO.DE.ORVALHO...C.
@@ -389,7 +414,18 @@ plot(density(c(mi,MI)))
 
 #### TEMPERATURA PONTO DO ORVALHO MÉDIA COM DIÁRIA ####
 
+
+preciptacao_media <- df %>% group_by(Data) %>% summarise(preciptacao_media = mean(PRECIPITAÇÃO.TOTAL..HORÁRIO..mm.))
+
 temp_media <- df  %>% group_by(Data) %>% summarise(media_temp = mean(TEMPERATURA.DO.PONTO.DE.ORVALHO...C., na.rm = T))
+
+saveRDS(temp_media, file = 'D://Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/temp_media_diaria.rds')
+
+hist(temp_media$media_temp)
+plot(temp_media$media_temp, type = 'l')
+acf(temp_media$media_temp)
+
+
 n <- 2
 N <- length(temp_media$media_temp)
 High <- temp_media$media_temp
@@ -430,30 +466,25 @@ pacf(MI)
 hist(MI,20)
 plot(density(MI))
 
-
 HIGH <- temp_media$media_temp
 N<-length(HIGH)  ; n<-60
 tau<-floor(N/n)
 mi<-numeric(tau) ; j<-1
-
 for (i in 1:tau){
   mi[i]<-min(HIGH[j:(j+n-1)])
   j<-j+n }
 
+temp_min_orvalho <- mi
+saveRDS(mi, file = 'D:\\Users\\Mathews\\Documents\\Git\\mestrado_unb\\dados_resumidos\\temperatura_min_orvalho.rds')
 
-
-hist(mi, main = 'TEMP MÍNIMA ORVALHO DO MÍNIMO DIÁRIO BLOCO 60')
+hist(mi, main = 'TEMP MÍNIMA ORVALHO DO MÍNIMO DIÁRIO BLOCO 60', probability = T)
+acf(mi)
 plot(density(mi), main='')
 
 hist(c(mi,MI))
 plot(density(c(mi,MI)))
 max(MI)
 min(mi)
-
-
-
-
-
 
 
 #### TEMPERATURA PONTO DO ORVALHO MÁXIMA SEM DIÁRIA ####
@@ -624,6 +655,7 @@ plot(density(c(mi,MI)))
 
 
 
+
 #### VELOCIDA DO VENTO M/S COM DIÁRIA ####
 
 vento <- df %>% group_by(dia = Data) %>% summarise(velocidade = mean(VENTO..VELOCIDADE.HORARIA..m.s., na.rm = T))
@@ -652,36 +684,34 @@ for (k in 1:100) {
 result <- tibble(result)
 names(result) <- c("Tamanho do bloco","P-valor (teste de Ljung-Box)")
 
-N<-length(HIGH);n<-75
+N<-length(High);n<-90
 tau<-floor(N/n)
-HIGH <- vento$velocidade
+High <- vento$velocidade
 mi<-numeric(tau);j<-1
 
 for (i in 1:tau){
-  mi[i]<-min(HIGH[j:(j+n-1)],na.rm = T)
+  mi[i]<-min(High[j:(j+n-1)],na.rm = T)
   j<-j+n }
 
 hist(mi,10)
-acf(mi)
+#acf(mi)
 plot(density(mi))
 
 
-N<-length(HIGH);n<-60
+N<-length(High);n<-90
 tau<-floor(N/n)
-HIGH <- vento$velocidade
+High <- vento$velocidade
 MI<-numeric(tau);j<-1
 
 for (i in 1:tau){
-  MI[i]<-max(HIGH[j:(j+n-1)],na.rm = T)
+  MI[i]<-max(High[j:(j+n-1)],na.rm = T)
   j<-j+n }
 
 hist(MI,10)
-acf(MI)
 plot(density(MI))
 
-#### misturando máximo e mínimo na média 
-hist(c(mi,MI), main = 'MISTURA DO MÍNIMO E MÁXIMO DA VELOCIDADE DO VENTO MÉDIA DIÁRIA BLOCO 60')
-plot(density(c(mi,MI)), main = '')
+
+
 
 
 #### VELOCIDADE DO VENTO SEM DIÁRIA ####
@@ -723,6 +753,9 @@ hist(c(mi,MI))
 
 vento <- df %>% group_by(dia  = Data) %>% summarise(rajada = max(VENTO..RAJADA.MAXIMA..m.s.,na.rm = T))
 
+saveRDS(vento, file='D:/Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/vento_diario.rds')
+
+
 n <- 2
 N <- length(vento$rajada)
 High <- vento$rajada
@@ -747,7 +780,7 @@ for (k in 1:100) {
 result <- tibble(result)
 names(result) <- c("Tamanho do bloco","P-valor (teste de Ljung-Box)")
 
-N<-length(HIGH);n<-60
+N<-length(HIGH);n<-56
 tau<-floor(N/n)
 HIGH <- vento$rajada
 mi<-numeric(tau);j<-1
@@ -756,12 +789,12 @@ for (i in 1:tau){
   mi[i]<-min(HIGH[j:(j+n-1)],na.rm = T)
   j<-j+n }
 
-hist(mi,10)
+hist(mi)
 acf(mi)
 plot(density(mi))
 
 
-N<-length(HIGH);n<-60
+N<-length(HIGH);n<-56
 tau<-floor(N/n)
 HIGH <- vento$rajada
 MI<-numeric(tau);j<-1
@@ -771,8 +804,10 @@ for (i in 1:tau){
   j<-j+n }
 
 acf(MI)
-hist(MI,10)
+hist(MI)
 plot(density(MI))
+
+saveRDS(MI, file='D:/Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/vento_max.rds')
 
 #### misturando máximo e mínimo na média 
 hist(c(mi,MI))
@@ -818,9 +853,13 @@ hist(c(mi,MI)) #### fica horrível
 
 
 
+
+
 #### UMIDADE DO AR COM DIÁRIO ####
 
 temp <- df %>% group_by(dia = Data) %>% summarise(umidade = mean(UMIDADE.RELATIVA.DO.AR..HORARIA...., na.rm = T))
+
+saveRDS(temp, file='D://Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/umidade_diaria.rds')
 
 n <- 2
 N <- length(temp$umidade)
@@ -855,9 +894,12 @@ for (i in 1:tau){
   mi[i]<-min(HIGH[j:(j+n-1)],na.rm = T)
   j<-j+n }
 
+saveRDS(mi, file = 'D://Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/umidade_minima.rds')
 hist(mi,10, main = 'BLOCOS MÍNIMO UMIDADE RELATIVA DO AR MÉDIA DIÁRIA')
 #acf(mi)
 plot(density(mi), main = '')
+
+
 
 
 HIGH <- temp$umidade
@@ -1068,12 +1110,15 @@ plot(density(c(mi,MI)))
 
 
 
+
 #### PRESSÃO ATMOSFÉRICA COM DIÁRIO ####
 
 temp <- df %>% group_by(Data) %>% summarise(pressao = mean(PRESSAO.ATMOSFERICA.AO.NIVEL.DA.ESTACAO..HORARIA..mB., na.rm = T))
 
+saveRDS(temp, file = 'D:/Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/pressao_diaria.rds')
+
 HIGH <- temp$pressao
-N<-length(HIGH);n<-60
+N<-length(HIGH);n<-70
 tau<-floor(N/n)
 mi<-numeric(tau);j<-1
 
@@ -1086,8 +1131,10 @@ hist(mi,10)
 plot(density(mi))
 
 
+saveRDS(mi,file = 'D:/Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/pressao_min.rds')
+
 HIGH <- temp$pressao
-N<-length(HIGH);n<-60
+N<-length(HIGH);n<-70
 tau<-floor(N/n)
 MI<-numeric(tau);j<-1
 
@@ -1100,7 +1147,7 @@ hist(MI,10)
 plot(density(MI))
 #### mistura de max e minimo
 
-hist(c(mi,MI))
+hist(c(mi,MI),20)
 plot(density(c(mi,MI)))
 
 
@@ -1136,8 +1183,8 @@ hist(MI,10)
 plot(density(MI))
 #### mistura de max e minimo
 
-hist(c(mi,MI), main = 'MISTURA ENTRE BLOCOS MAX E MIN PRESSAO ATMOSFERICA')
-plot(density(c(mi,MI)), main = '')
+#hist(c(mi,MI), main = 'MISTURA ENTRE BLOCOS MAX E MIN PRESSAO ATMOSFERICA')
+#plot(density(c(mi,MI)), main = '')
 
 #### PRESSÃO ATMOSFÉRICA MÁXIMA COM DIÁRIO ####
 temp <- df %>% group_by(Data) %>% summarise(pressao = max(PRESSÃO.ATMOSFERICA.MAX.NA.HORA.ANT...AUT...mB., na.rm = T))
@@ -1277,3 +1324,70 @@ plot(density(MI))
 
 hist(c(mi,MI))
 plot(density(c(mi,MI)))
+
+
+#### Radiação ####### 
+
+radiacao <- df %>% group_by(Data) %>% summarise(radiacao = mean(`RADIACAO.GLOBAL..Kj.m².`, na.rm = T))
+
+hist(as.numeric(radiacao$radiacao) )
+
+
+
+n <- 2
+N <- length(radiacao$radiacao)
+High <- radiacao$radiacao
+result <- data.frame() 
+
+for (k in 1:100) {  
+  n<-k  
+  tau<-floor(N/n)  
+  m<-numeric(tau) ; j<-1
+  for (i in 1:tau){   
+    m[i]<-max(High[j:(j+n-1)])    
+    j<-j+n }    
+  m<-m[-1]    
+  teste<-Box.test(m, lag = 1,              
+                  type = c("Box-Pierce", "Ljung-Box"), 
+                  fitdf = 0)    
+  teste$indice <- k   
+  teste <- c(teste$indice,teste$p.value)
+  result <- rbind(result, teste)
+}
+
+result <- tibble(result)
+names(result) <- c("Tamanho do bloco","P-valor (teste de Ljung-Box)")
+
+
+HIGH <- radiacao$radiacao
+N<-length(HIGH);n<-60
+tau<-floor(N/n)
+mi<-numeric(tau);j<-1
+
+for (i in 1:tau){
+  mi[i]<-min(HIGH[j:(j+n-1)],na.rm = T)
+  j<-j+n }
+
+hist(mi,10)
+plot(density(mi))
+
+
+HIGH <- radiacao$radiacao
+N<-length(HIGH);n<-60
+tau<-floor(N/n)
+MI<-numeric(tau);j<-1
+
+for (i in 1:tau){
+  MI[i]<-max(HIGH[j:(j+n-1)],na.rm = T)
+  j<-j+n }
+
+hist(MI,10)
+plot(density(MI))
+
+
+#### mistura de max e minimo
+
+hist(c(mi,MI))
+plot(density(c(mi,MI)))
+  
+  

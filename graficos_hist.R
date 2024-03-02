@@ -1,4 +1,3 @@
-publica <- dados_inep %>% filter(TP_ESCOLA==2)
 
 
 ggplot(dados_inep,aes(x=as.numeric(NU_NOTA_MT)))+
@@ -12,6 +11,8 @@ ggplot(dados_inep,aes(x=as.numeric(NU_NOTA_MT)))+
         axis.text=element_text(colour='black',size=9.5),
         panel.border=element_blank(),
         axis.line=element_line(colour='black'))
+
+
 ggsave('imagens/hist_enem_nt_mt.png',width=158,height=93,units='mm')
 
 
