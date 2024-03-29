@@ -19,19 +19,6 @@ H1 <- ggplot(pressao,aes(x=pressao))+
 
 pressao_min_df <- data.frame(x = pressao_min)
 
-
-ggplot(pressao_min_df,aes(x=x))+
-  geom_histogram(aes(y = ..density..),colour='white',fill='#696969',breaks=seq(924,935,1))+
-  labs(x='x',y='')+
-  theme_bw()+
-  theme(axis.title.y=element_text(colour='black',size=12),
-        axis.title.x=element_text(colour='black',size=12),
-        axis.text=element_text(colour='black',size=9.5),
-        panel.border=element_blank(),
-        axis.line=element_line(colour='black'))
-
-
-
 hist(Z2)
 Z2 <- pressao_min
 
@@ -40,16 +27,16 @@ fit <- fExtremes::gevFit(Z2, type = 'mle')
 starts <- c(mu=fit@fit$par.ests[2],sigma=fit@fit$par.ests[3], xi=fit@fit$par.ests[1], delta=0)
 test <- optim(par=starts,fn=likbgev,y=Z2,method = 'BFGS',hessian = T)
 x <- seq(min(Z2), max(Z2), 0.1)
+
+
 test$par
-
 test$hessian
+
 colors <- c('BGEV'='black', 'GEV'='red')
-
-
 
 H2 <- ggplot(pressao_min_df,aes(x=x))+
   geom_histogram(aes(y = ..density..),colour='white',fill='#696969',breaks=seq(925,933,1))+
-  geom_line(aes(x=x,y=dbgev(x, mu=test$par[1],sigma=test$par[2],
+  geom_line(aes(x=x,y=dbgevd(x, mu=test$par[1],sigma=test$par[2],
                             xi = test$par[3], delta=  test$par[4]), color='BGEV'),size=1)+
   
   ##PorLegenda
@@ -67,6 +54,7 @@ H2 <- ggplot(pressao_min_df,aes(x=x))+
         legend.position = 'top')
 
 H2
+
 ## no fim ficaram sobrepostas pq era unimodal então gev e bgev são iguais ###
 plot_grid(H1,H2)
 ggsave('D:/Users/Mathews/Documents/Git/mestrado_unb/imagens/painel_pressao.png',

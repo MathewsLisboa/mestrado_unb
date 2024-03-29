@@ -25,13 +25,6 @@ dbgevd <- function(y, mu, sigma, xi, delta){
   # Norte, Natal, 59078-970, RN, Brazil.
   #   Parameters: y in R; mu in R; sigma > 0; xi in R ;  delta > -1;
   
-  # FUNCTION:
-  
-  # Error treatment of input parameters
-  if(sigma <= 0  || delta <= -1 )
-    stop("Failed to verify condition:
-           sigma <= 0  || delta <= -1")
-  
   # Compute auxiliary variables:
   Ti      <- (y-mu)*(abs(y-mu)^delta)
   derivate_T <- (delta + 1)*(abs(y-mu)^delta)
@@ -41,14 +34,8 @@ dbgevd <- function(y, mu, sigma, xi, delta){
   return(pdf)
 }
 
-dbgevd(c(.1,2),mu=1, sigma=10, xi=0.3, delta=2)
 
 qbgevd   <- function(p, mu, sigma, xi, delta){
-  # Description:
-  #   Compute the quantile for the 
-  #   Bimodal GEV distribution.
-  #   Parameters: p in [0;1];  mu in R; sigma > 0; xi in R ;  delta > -1;
-  
   # FUNCTION:
   
   # Error treatment of input parameters
@@ -92,18 +79,9 @@ likbgev <- function(theta,y){
   
   # Parameters:
   mu      <- theta[1]
-  sigma   <- theta[2] 
+  sigma   <- ifelse(theta[2]>0,theta[2],1^(-100)) 
   xi      <- theta[3]
   delta   <- theta[4]
-  
-  # Error treatment of input parameters
-  if(length(theta)!=4){
-  stop("vector of parameters needs to be of length 4.")}
-  if(sigma <= 0  || delta <= -1 ){
-    stop("Failed to verify condition:
-           sigma <= 0  || delta <= -1")}
-  
-  # Compute auxiliary variables:
   T      <- (y-mu)*(abs(y-mu)^delta)
   derivate_T <- (delta + 1)*(abs(y-mu)^delta)
   # Compute density points
@@ -153,43 +131,3 @@ pbgevd <- function(y, mu, sigma, xi, delta){
   return(cdf)
 }
 
-
-n       <- 10^3;mu<- 0
-sigma   <- 2;xi<- 0.5
-delta   <- 1
-
-Z <- rbgevd(n, mu, sigma, xi, delta)
-
-hist(Z,freq = FALSE,main="",xlab="x",ylab="Density",lwd=2)
-x <- seq(min(Z), max(Z), 0.01)
-hist(Z,freq = FALSE,main="",xlab="x",ylab="Density",lwd=2)
-lines(x,dbgevd(x, mu, sigma, xi, delta),lty=1,lwd=2)
-
-starts <- c(mu,sigma, xi, delta)
-
-test <-optim(par= starts, fn = likbgev, y=Z, method="L-BFGS-B",lower = c(0,0.2,0,0))
-
-lik1 <- function(theta, y){
-  
-  par_len <- length(theta)
-  mu      <- theta[1]
-  sigma   <- ifelse(theta[2]>0,theta[2],1^-100)
-  xi      <- theta[3]
-  delta   <- theta[4]
-  
-  Tlinha <- (delta + 1)*(abs(y-mu)^delta)#*sigma
-  T      <- (y-mu)*(abs(y-mu)^delta)#*sigma
-  dbgevd_l <- dgevd(T, mu, sigma, xi)*Tlinha
-  
-  logl <- sum(log(dbgevd(y,mu, sigma, xi, delta)))####
-  return(-logl)
-}
-
-test <- optim(par = starts, fn = lik1, y=Z, method = 'BFGS')
-starts
-y <- Z
-Tlinha <- (delta + 1)*(abs(y-mu)^delta)#*sigma
-T      <- (y-mu)*(abs(y-mu)^delta)#*sigma
-dbgevd_l <- dgevd(T, mu, sigma, xi)*Tlinha
-sum(log(dbgevd_l))
-sum(log(dgevd(T, mu, sigma, xi)*Tlinha))
