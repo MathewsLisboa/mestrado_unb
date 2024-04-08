@@ -8,7 +8,7 @@ ler_inmet <- function(x){
                                        ESTACAO = str_split(x, '_')[[1]][4],
                                        CIDADE = str_split(x, '_')[[1]][5]) %>% subset(select=-20)}
 
-##S704 === EStação de BONITO ms
+##S704 === Estação de BONITO ms
 ##A002 GOIÂNIA 
 ##A001 Brasília
 ##A899 Santa Palma RS (centro Eólico)
@@ -16,6 +16,7 @@ ler_inmet <- function(x){
 
 
 #### leitura de dados ####
+
 setwd('D:\\Users\\Mathews\\Documents\\UNB_mestrado\\Copulas\\dados_inmet')
 
 ESTACAO <- 'A002' ### escolhe a estação que você quer ler 
@@ -202,17 +203,7 @@ plot(density(mi))
 hist(c(mi,MI))
 plot(density(c(mi, MI)))
 
-
-
-
-
-
-
-
-
-
 #### TEMPERATURA BULBO SECO MÁXIMA SEM FAZER DIÁRIA ANTES #### 
-
 hist(df$TEMPERATURA.MÁXIMA.NA.HORA.ANT...AUT....C.)
 High <- df$TEMPERATURA.MÁXIMA.NA.HORA.ANT...AUT....C.
 N<-length(High)  ; n<-1360
@@ -649,13 +640,6 @@ plot(density(mi))
 hist(c(mi,MI))
 plot(density(c(mi,MI)))
 
-
-
-
-
-
-
-
 #### VELOCIDA DO VENTO M/S COM DIÁRIA ####
 
 vento <- df %>% group_by(dia = Data) %>% summarise(velocidade = mean(VENTO..VELOCIDADE.HORARIA..m.s., na.rm = T))
@@ -709,10 +693,6 @@ for (i in 1:tau){
 
 hist(MI,10)
 plot(density(MI))
-
-
-
-
 
 #### VELOCIDADE DO VENTO SEM DIÁRIA ####
 
@@ -894,19 +874,16 @@ for (i in 1:tau){
   mi[i]<-min(HIGH[j:(j+n-1)],na.rm = T)
   j<-j+n }
 
-saveRDS(mi, file = 'D://Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/umidade_minima.rds')
+
+#saveRDS(mi, file = 'D://Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/umidade_minima.rds')
 hist(mi,10, main = 'BLOCOS MÍNIMO UMIDADE RELATIVA DO AR MÉDIA DIÁRIA')
 #acf(mi)
 plot(density(mi), main = '')
-
-
-
 
 HIGH <- temp$umidade
 N<-length(HIGH);n<-60
 tau<-floor(N/n)
 MI<-numeric(tau);j<-1
-
 for (i in 1:tau){
   MI[i]<-max(HIGH[j:(j+n-1)],na.rm = T)
   j<-j+n }
@@ -917,12 +894,9 @@ plot(density(MI))
 
 
 #### mistura de max e minimo
-
 hist(c(mi,MI))
 plot(density(c(mi,MI)))
-
 #### UMIDADE DO AR SEM DIÁRIO ####
-
 HIGH <- df$UMIDADE.RELATIVA.DO.AR..HORARIA....
 N<-length(HIGH);n<-60*24
 tau<-floor(N/n)
