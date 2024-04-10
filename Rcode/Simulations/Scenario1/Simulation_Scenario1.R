@@ -1,6 +1,7 @@
 source("BGEV_MLE.r")
 library(EnvStats)
 library(evd)
+
 qbgev   <- function(p, m, sigma, delta){
   # Compute distribution points according to their sign
   mu <- m - (-sigma*log(-log(0.5)))^(1/(delta+1)) # m is median
@@ -43,8 +44,7 @@ kk1 <- length(VBETA)
 se1 = 19 ; se2 = 94 #random seed
 suppressWarnings(set.seed(c(se1,se2), kind="Marsaglia-Multicarry")) #To ensure repeatability of the experiment
 
-for(l in 1:length(VN))#Loop for the sample size
-{
+for(l in 1:length(VN)){#Loop for the sample size
 N = VN[l]
 x1 <- runif(N); x2 <- runif(N)
 X <- matrix(c(rep(1,N), x1, x2), ncol=3, byrow=F); #regressor matrix for the median model

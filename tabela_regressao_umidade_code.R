@@ -4,24 +4,21 @@ library(lubridate)
 library(stringr)
 
 ## leitura dos dados originais ##### 
-df <- readRDS(file = 'dados_resumidos/dados_originais.rds')
+df <- readRDS(file = 'D:/Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/dados_originais.rds')
 
 pct_nas <- function(x){
   return(sum(is.na(x))/length(x))
 }
 
-
 sapply(df, pct_nas)
-temp_media <- df  %>% group_by(Data) %>% summarise(media_temp = mean(TEMPERATURA.DO.PONTO.DE.ORVALHO...C., na.rm = T))
-chuva_diaria <- df %>% group_by(Data) %>% summarise(chuva = sum(PRECIPITAÇÃO.TOTAL..HORÁRIO..mm., na.rm=T))
-radiacao_total <- df %>% group_by(Data) %>% summarise(radiacao= sum(`RADIACAO.GLOBAL..Kj.m².`, na.rm = T))
 
+### fazendo a media diaria da umidadade relativa
+temp <- df %>% group_by(dia = Data) %>% summarise(umidade = mean(UMIDADE.RELATIVA.DO.AR..HORARIA...., na.rm = T))
 
-### triando os blocos mínimos de tamanho 60
-
+#### Tirando os mínimos quadrados para umidade relativa 
 n <- 2
-N <- length(temp_media$media_temp)
-High <- temp_media$media_temp
+N <- length(temp$umidade)
+High <- temp$umidade
 result <- data.frame() 
 
 for (k in 1:100) {  
@@ -43,16 +40,14 @@ for (k in 1:100) {
 result <- tibble(result)
 names(result) <- c("Tamanho do bloco","P-valor (teste de Ljung-Box)")
 
-HIGH <- temp_media$media_temp
-N<-length(HIGH)  ; n<-60
+HIGH <- temp$umidade
+N<-length(HIGH);n<-60
 tau<-floor(N/n)
-
-mi<-numeric(tau) ; j<-1
+mi<-numeric(tau);j<-1
 pos<-numeric(tau)
 
-
 for (i in 1:tau){
-  mi[i]<-min(HIGH[j:(j+n-1)])
+  mi[i]<-min(HIGH[j:(j+n-1)],na.rm = T)
   pos[i] <- which(HIGH[j:(j+n-1)]==min(HIGH[j:(j+n-1)]))
   j<-j+n 
 }
@@ -60,13 +55,10 @@ for (i in 1:tau){
 tabela_media_diaria <- data.frame(Data = sort(unique(df$Data)))
 
 for(j in 3:19){
- aux <-  df  %>% group_by(Data) %>% summarise(mean(eval(as.symbol(names(df)[j])), na.rm = T))
- tabela_media_diaria[,j-1] <- aux[,2]
+  aux <-  df  %>% group_by(Data) %>% summarise(mean(eval(as.symbol(names(df)[j])), na.rm = T))
+  tabela_media_diaria[,j-1] <- aux[,2]
   
 }
-
-chuva_total <- df %>% group_by(Data) %>% summarise(chuva_total = sum(PRECIPITAÇÃO.TOTAL..HORÁRIO..mm., na.rm = T))
-nrow(chuva_total)
 
 nomes <- names(df)[3:19]
 
@@ -79,26 +71,29 @@ nomes[17] <- 'Vento_velocidade'
 
 names(tabela_media_diaria)[2:18] <- nomes
 
+
+names(tabela_media_diaria)[2:18] <- nomes
+
 pos2 <- pos+seq(0,(n*length(pos))-1,by=n)
 
 tabela_regressao %>% nrow()
 
 tabela_regressao <- tabela_media_diaria[pos2,]
-chuva_total$chuva_total[pos2]
 
-
-tabela_regressao <-  tabela_regressao %>% select(Data,Temperatura_orvalho,Precipitacao_media,Pressao_media,Pressao_max,
+tabela_regressao_umidade <-  tabela_regressao %>% select(Data,Temperatura_orvalho,Precipitacao_media,Pressao_media,Pressao_max,
                                                  Pressao_min,Radiacao_global,Temperatura_bulbo,Temperatura_orvalho,Temperatura_max_bulbo,
                                                  Temperatura_min_bulbo, Temperatura_max_orvalho,Temperatura_min_orvalho,Umidade_rel_max,
-                                                Umidade_rel_min,Umidade_rel,Ventro_direcao,Vento_rajada_max,Vento_velocidade)
+                                                 Umidade_rel_min,Umidade_rel,Ventro_direcao,Vento_rajada_max,Vento_velocidade)
+names(tabela_regressao_umidade)
 
 
-names(tabela_regressao)
-### Salvando media diária e tambéma tabela de regressão com todas as 18 covariáveis 
-saveRDS(tabela_media_diaria,file = 'D://Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/tabela_media_diaria.rds')
+## finalmente salvando o trabalho final
 
-saveRDS(tabela_regressao,file = 'D://Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/tabela_regressao.rds')
+saveRDS(tabela_regressao_umidade,file = 'D://Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/tabela_regressao_umidade.rds')
 
-write.csv2(tabela_regressao,file = 'D://Users/Mathews/Documents/UNB_mestrado/tabela_regressao.csv')
+write.csv2(tabela_regressao_umidade,file = 'D://Users/Mathews/Documents/UNB_mestrado/tabela_regressao_umidade.csv')
 
-tabela_regressao$Temperatura_orvalho %>% summary()
+tabela_regressao_umidade$Temperatura_orvalho %>% summary()
+
+
+
