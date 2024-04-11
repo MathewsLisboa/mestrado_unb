@@ -70,7 +70,7 @@ faixa <- range(res_rq,res_min_rq,res_max_rq)
 if(is.vector(faixa.fixed)) faixa <- faixa.fixed
 if(is.vector(labels.fixed)) labels <- labels.fixed
 par(mar=c(5.0,5.0,4.0,2.0))
-v <- qqnorm(res_rq, main=main.title, xlab="Quantis Normal", ylab="Res", ylim=faixa, pch=16, cex=1.5, cex.lab=2.0, cex.axis=1.5, cex.main=2.0)
+v <- qqnorm(res_rq, main=main.title, xlab="Quantis Normal", ylab="Resíduos", ylim=faixa, pch=16, cex=1.5, cex.lab=2.0, cex.axis=1.5, cex.main=2.0)
 #identify(v$x,v$y,labels,cex =1.3) #identify points in the plot
 par(new=T)
 #

@@ -6,13 +6,6 @@ library(readr)
 library(lubridate)
 library(stringr)
 
-cor(tabela_regressao$Temperatura_orvalho, tabela_regressao$Umidade_rel - mean(tabela_regressao$Umidade_rel))
-
-cor(tabela_regressao$Umidade_rel, tabela_regressao$Pressao_media)
-
-
-
-
 ## lendo os dados da tabela regressão 
 
 tabela_regressao <- read_rds(file = 'dados_resumidos/tabela_regressao.rds')
@@ -24,6 +17,15 @@ tabela_regressao$Precipitacao_media[which(is.na(tabela_regressao$Precipitacao_me
 tabela_regressao$estacoes <- ifelse(month(tabela_regressao$Data)%in%c(10,11,12,1,2,3,4),1,0)
 tabela_regressao$chuva <- ifelse(tabela_regressao$Precipitacao_media>0,1,0)
 
+###### correlacao 
+
+cor(tabela_regressao$Temperatura_orvalho, tabela_regressao$Umidade_rel - mean(tabela_regressao$Umidade_rel))
+
+cor(tabela_regressao$Umidade_rel, tabela_regressao$Pressao_media)
+
+cor(tabela_regressao$Temperatura_orvalho, tabela_regressao$Pressao_media)
+
+cor(tabela_regressao$Pressao_media, tabela_regressao$Umidade_rel)
 
 ## Umidade_rel
 x1 <- tabela_regressao$Umidade_rel
@@ -129,6 +131,87 @@ envelope_BGEV(y, X, c(fit_BGEV$beta, fit_BGEV$sigma, fit_BGEV$delta))
 ##### Tentando fazer com duas variáveis #####
 
 
+### Estacoes Umidadel_rel
+
+x1 <- tabela_regressao$estacoes
+x2 <- tabela_regressao$Umidade_rel - mean(tabela_regressao$Umidade_rel)
+n <- nrow(tabela_regressao)
+X<- matrix(c(rep(1,n),x1,x2),ncol=3,byrow=F); #regressor matrix for the median model
+y <- tabela_regressao$Temperatura_orvalho
+fit_BGEV <- MLE_BGEV(y,X, method="BFGS", maxit=200)
+fit_BGEV
+
+####### envelope
+envelope_BGEV(y, X, c(fit_BGEV$beta, fit_BGEV$sigma, fit_BGEV$delta))
+
+### Estacoes e temperatura do ar
+
+x1 <- tabela_regressao$estacoes
+x2 <- tabela_regressao$Temperatura_bulbo
+n <- nrow(tabela_regressao)
+X<- matrix(c(rep(1,n),x1,x2),ncol=3,byrow=F); #regressor matrix for the median model
+y <- tabela_regressao$Temperatura_orvalho
+fit_BGEV <- MLE_BGEV(y,X, method="BFGS", maxit=200)
+fit_BGEV
+
+####### envelope
+envelope_BGEV(y, X, c(fit_BGEV$beta, fit_BGEV$sigma, fit_BGEV$delta))
 
 
+### Estacoes e Pressão
+
+x1 <- tabela_regressao$estacoes
+x2 <- tabela_regressao$Pressao_media - mean(tabela_regressao$Pressao_media)
+n <- nrow(tabela_regressao)
+X<- matrix(c(rep(1,n),x1,x2),ncol=3,byrow=F); #regressor matrix for the median model
+y <- tabela_regressao$Temperatura_orvalho
+fit_BGEV <- MLE_BGEV(y,X, method="BFGS", maxit=200)
+fit_BGEV
+
+####### envelope
+envelope_BGEV(y, X, c(fit_BGEV$beta, fit_BGEV$sigma, fit_BGEV$delta))
+
+##### Estacoes e velocidade do vento
+
+x1 <- tabela_regressao$estacoes
+x2 <- tabela_regressao$Vento_rajada_max - mean(tabela_regressao$Vento_rajada_max)
+n <- nrow(tabela_regressao)
+X<- matrix(c(rep(1,n),x1,x2),ncol=3,byrow=F); #regressor matrix for the median model
+y <- tabela_regressao$Temperatura_orvalho
+fit_BGEV <- MLE_BGEV(y,X, method="BFGS", maxit=200)
+fit_BGEV
+
+####### envelope
+envelope_BGEV(y, X, c(fit_BGEV$beta, fit_BGEV$sigma, fit_BGEV$delta))
+
+
+##### Umidade e Pressão 
+
+x1 <- tabela_regressao$Umidade_rel - mean(tabela_regressao$Umidade_rel)
+x2 <- tabela_regressao$Pressao_media - mean(tabela_regressao$Pressao_media)
+n <- nrow(tabela_regressao)
+X<- matrix(c(rep(1,n),x1,x2),ncol=3,byrow=F); #regressor matrix for the median model
+y <- tabela_regressao$Temperatura_orvalho
+fit_BGEV <- MLE_BGEV(y,X, method="BFGS", maxit=200)
+fit_BGEV
+
+####### envelope
+envelope_BGEV(y, X, c(fit_BGEV$beta, fit_BGEV$sigma, fit_BGEV$delta))
+
+
+## Tentar com 3 variáveis pra inserir Estacoes
+
+x1 <- tabela_regressao$Umidade_rel - mean(tabela_regressao$Umidade_rel)
+x2 <- tabela_regressao$Pressao_media - mean(tabela_regressao$Pressao_media)
+x3 <- tabela_regressao$estacoes
+n <- nrow(tabela_regressao)
+X<- matrix(c(rep(1,n),x1,x2,x3),ncol=4,byrow=F); #regressor matrix for the median model
+y <- tabela_regressao$Temperatura_orvalho
+fit_BGEV <- MLE_BGEV(y,X, method="BFGS", maxit=200)
+fit_BGEV
+
+####### envelope
+envelope_BGEV(y, X, c(fit_BGEV$beta, fit_BGEV$sigma, fit_BGEV$delta))
+
+### Tá acho que o melhor modelo considerando as variáveis 
 

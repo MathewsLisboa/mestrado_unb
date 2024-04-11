@@ -39,3 +39,99 @@ fit_BGEV2
 
 ####### envelope
 envelope_BGEV2(y, X, c(fit_BGEV2$beta, fit_BGEV2$sigma, fit_BGEV2$xi, fit_BGEV2$delta))
+
+#### Estacoes 
+
+x1 <- tabela_regressao$estacoes
+n <- nrow(tabela_regressao)
+X<- matrix(c(rep(1,n),x1),ncol=2,byrow=F); #regressor matrix for the median model
+y <- tabela_regressao$Temperatura_orvalho
+fit_BGEV2 <- MLE_BGEV2(y,X, method="BFGS", maxit=200)
+fit_BGEV2
+
+####### envelope
+envelope_BGEV2(y, X, c(fit_BGEV2$beta, fit_BGEV2$sigma, fit_BGEV2$xi, fit_BGEV2$delta))
+
+
+#### Pressão, essa pressão ficou muito boa, acho que vou colcoar ela com estações
+x1 <- tabela_regressao$Pressao_media - mean(tabela_regressao$Pressao_media)
+n <- nrow(tabela_regressao)
+X<- matrix(c(rep(1,n),x1),ncol=2,byrow=F); #regressor matrix for the median model
+y <- tabela_regressao$Temperatura_orvalho
+fit_BGEV2 <- MLE_BGEV2(y,X, method="BFGS", maxit=200)
+fit_BGEV2
+
+####### envelope
+envelope_BGEV2(y, X, c(fit_BGEV2$beta, fit_BGEV2$sigma, fit_BGEV2$xi, fit_BGEV2$delta))
+
+
+#### Temperatura bulbo
+x1 <- tabela_regressao$Temperatura_bulbo
+n <- nrow(tabela_regressao)
+X<- matrix(c(rep(1,n),x1),ncol=2,byrow=F); #regressor matrix for the median model
+y <- tabela_regressao$Temperatura_orvalho
+fit_BGEV2 <- MLE_BGEV2(y,X, method="BFGS", maxit=200)
+fit_BGEV2
+
+####### envelope
+envelope_BGEV2(y, X, c(fit_BGEV2$beta, fit_BGEV2$sigma, fit_BGEV2$xi, fit_BGEV2$delta))
+
+
+#### Tentativas com duas variáveis #######
+
+
+### Umidade  e Estacoes
+
+x1 <- tabela_regressao$Umidade_rel - mean(tabela_regressao$Umidade_rel)
+x2 <- tabela_regressao$estacoes
+n <- nrow(tabela_regressao)
+X<- matrix(c(rep(1,n),x1,x2),ncol=3,byrow=F); #regressor matrix for the median model
+y <- tabela_regressao$Temperatura_orvalho
+fit_BGEV2 <- MLE_BGEV2(y,X, method="BFGS", maxit=200)
+fit_BGEV2
+
+####### envelope
+envelope_BGEV2(y, X, c(fit_BGEV2$beta, fit_BGEV2$sigma, fit_BGEV2$xi, fit_BGEV2$delta))
+
+
+### Estacoes e Pressao
+
+x1 <- tabela_regressao$Pressao_media - mean(tabela_regressao$Pressao_media)
+x2 <- tabela_regressao$estacoes
+n <- nrow(tabela_regressao)
+X<- matrix(c(rep(1,n),x1,x2),ncol=3,byrow=F); #regressor matrix for the median model
+y <- tabela_regressao$Temperatura_orvalho
+fit_BGEV2 <- MLE_BGEV2(y,X, method="BFGS", maxit=200)
+fit_BGEV2
+
+####### envelope
+envelope_BGEV2(y, X,c(fit_BGEV2$beta, fit_BGEV2$sigma, fit_BGEV2$xi, fit_BGEV2$delta))
+
+
+### Estacoes e Temperatura
+
+x1 <- tabela_regressao$Temperatura_bulbo
+x2 <- tabela_regressao$estacoes
+n <- nrow(tabela_regressao)
+X<- matrix(c(rep(1,n),x1,x2),ncol=3,byrow=F); #regressor matrix for the median model
+y <- tabela_regressao$Temperatura_orvalho
+fit_BGEV2 <- MLE_BGEV2(y,X, method="BFGS", maxit=200)
+fit_BGEV2
+
+####### envelope
+envelope_BGEV2(y, X,c(fit_BGEV2$beta, fit_BGEV2$sigma, fit_BGEV2$xi, fit_BGEV2$delta))
+
+
+### Tentativa com 3 variáveis ####
+
+x1 <- tabela_regressao$Pressao_media- mean(tabela_regressao$Pressao_media)
+x2 <- tabela_regressao$Umidade_rel - mean(tabela_regressao$Umidade_rel)
+x3 <- tabela_regressao$estacoes
+n <- nrow(tabela_regressao)
+X<- matrix(c(rep(1,n),x1,x2,x3),ncol=4,byrow=F); #regressor matrix for the median model
+y <- tabela_regressao$Temperatura_orvalho
+fit_BGEV2 <- MLE_BGEV2(y,X, method="BFGS", maxit=200)
+fit_BGEV2
+
+####### envelope
+envelope_BGEV2(y, X,c(fit_BGEV2$beta, fit_BGEV2$sigma, fit_BGEV2$xi, fit_BGEV2$delta))
