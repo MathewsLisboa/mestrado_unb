@@ -9,7 +9,7 @@
 # labels.fixed - labels of the observations used to create the plot (optional). Default is NULL meaning that all observations are used.
 #**************************************************************************************************************************************************************************************#
 
-envelope_BGEV2 <- function(y, X, theta, main.title = "Envelope", faixa.fixed = NULL, labels.fixed = NULL) { 
+envelope_BGEV2 <- function(y, X, theta, main.title = '', faixa.fixed = NULL, labels.fixed = NULL) { 
 source("BGEV2_MLE.r")
 B <- 100; #number of replicates
 kk1 <- ncol(X);  n <- nrow(X)
@@ -77,7 +77,7 @@ faixa <- range(res_rq,res_min_rq,res_max_rq)
 if(is.vector(faixa.fixed)) faixa <- faixa.fixed
 if(is.vector(labels.fixed)) labels <- labels.fixed
 par(mar=c(5.0,5.0,4.0,2.0))
-v <- qqnorm(res_rq, main=main.title, xlab="Normal quantiles", ylab="Residuals", ylim=faixa, pch=16, cex=1.5, cex.lab=2.0, cex.axis=1.5, cex.main=2.0)
+v <- qqnorm(res_rq, main=main.title, xlab="Normal quantiles", ylab="Residuals", ylim=faixa, pch=16, cex=1.0, cex.lab=2.0, cex.axis=1.5, cex.main=2.0)
 #identify(v$x,v$y,labels,cex =1.3) #identify points in the plot
 par(new=T)
 #

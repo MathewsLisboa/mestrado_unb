@@ -19,8 +19,10 @@ ler_inmet <- function(x){
 
 setwd('D:\\Users\\Mathews\\Documents\\UNB_mestrado\\Copulas\\dados_inmet')
 
-ESTACAO <- 'A002' ### escolhe a estação que você quer ler 
+ESTACAO <- 'A915' ### escolhe a estação que você quer ler
+
 anos <- c(2022:2011)
+
 df <- data.frame()
 nomes <- c("Data","Hora.UTC","PRECIPITAÇÃO.TOTAL..HORÁRIO..mm.","PRESSAO.ATMOSFERICA.AO.NIVEL.DA.ESTACAO..HORARIA..mB.","PRESSÃO.ATMOSFERICA.MAX.NA.HORA.ANT...AUT...mB." 
            ,"PRESSÃO.ATMOSFERICA.MIN..NA.HORA.ANT...AUT...mB.","RADIACAO.GLOBAL..Kj.m²."                              
@@ -109,7 +111,7 @@ saveRDS(df, file = 'D:\\Users\\Mathews\\Documents\\Git\\mestrado_unb/dados_resum
 hist(df$TEMPERATURA.DO.AR...BULBO.SECO..HORARIA...C.)
 
 High <- df$TEMPERATURA.DO.AR...BULBO.SECO..HORARIA...C.
-N<-length(High)  ; n<-1360
+N<-length(High)  ; n <- 65*24
 tau<-floor(N/n)
 MI<-numeric(tau) ; j<-1
 
@@ -144,7 +146,7 @@ plot(density(c(mi,MI))) ## acho que ficou bem ruim
 #### TEMPERATURA BULBO SECO MÉDIO COM DIÁRIA ANTES ####
 
 temp <- df %>% group_by(Data= Data) %>% summarise(temp = mean(TEMPERATURA.DO.AR...BULBO.SECO..HORARIA...C., na.rm = T))
-
+hist(temp$temp)
 n <- 2
 N <- length(temp$temp)
 High <- temp$temp
@@ -168,7 +170,6 @@ for (k in 1:100) {
 
 result <- tibble(result)
 names(result) <- c("Tamanho do bloco","P-valor (teste de Ljung-Box)")
-
 
 
 High <- temp$temp
@@ -466,7 +467,7 @@ for (i in 1:tau){
   j<-j+n }
 
 temp_min_orvalho <- mi
-saveRDS(mi, file = 'D:\\Users\\Mathews\\Documents\\Git\\mestrado_unb\\dados_resumidos\\temperatura_min_orvalho.rds')
+# saveRDS(mi, file = 'D:\\Users\\Mathews\\Documents\\Git\\mestrado_unb\\dados_resumidos\\temperatura_min_orvalho.rds')
 
 hist(mi, main = 'TEMP MÍNIMA ORVALHO DO MÍNIMO DIÁRIO BLOCO 60', probability = T)
 acf(mi)
@@ -474,7 +475,7 @@ plot(density(mi), main='')
 
 hist(c(mi,MI))
 plot(density(c(mi,MI)))
-max(MI)
+max(mi)
 min(mi)
 
 
@@ -839,7 +840,9 @@ hist(c(mi,MI)) #### fica horrível
 
 temp <- df %>% group_by(dia = Data) %>% summarise(umidade = mean(UMIDADE.RELATIVA.DO.AR..HORARIA...., na.rm = T))
 
-saveRDS(temp, file='D://Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/umidade_diaria.rds')
+#saveRDS(temp, file='D://Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/umidade_diaria.rds')
+
+mean(df$UMIDADE.RELATIVA.DO.AR..HORARIA...., na.rm=T)
 
 n <- 2
 N <- length(temp$umidade)
@@ -875,8 +878,9 @@ for (i in 1:tau){
   j<-j+n }
 
 
+mi
 #saveRDS(mi, file = 'D://Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/umidade_minima.rds')
-hist(mi,10, main = 'BLOCOS MÍNIMO UMIDADE RELATIVA DO AR MÉDIA DIÁRIA')
+hist(mi, main = 'BLOCOS MÍNIMO UMIDADE RELATIVA DO AR MÉDIA DIÁRIA')
 #acf(mi)
 plot(density(mi), main = '')
 

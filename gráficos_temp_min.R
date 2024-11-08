@@ -67,7 +67,7 @@ H2 <- ggplot(temp_min,aes(x=x))+
                             xi = test$par[3], delta= test$par[4]), color='BGEV'),size=1)+
   ##PorLegenda
   geom_line(aes(x=x,y=dgev(x, loc=8.9407448, scale = 5.7027691, shape = -0.6542575), color='GEV'),size=1)+
-  labs(x='m',y='', color='')+
+  labs(x='min',y='', color='')+
   scale_color_manual(values=colors)+
   theme_bw()+
   theme(axis.title.y=element_text(colour='black',size=12),

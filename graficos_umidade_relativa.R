@@ -61,7 +61,7 @@ H2<- ggplot(umidade_min_df,aes(x=x))+
   ##PorLegenda
   geom_line(aes(x=x,y=dgev(x, loc= fit@fit$par.ests[2], scale = fit@fit$par.ests[3], shape =fit@fit$par.ests[1]), color='GEV'),size=1)+
   
-  labs(x='m',y='', color='')+
+  labs(x='min',y='', color='')+
   scale_color_manual(values=colors)+
   theme_bw()+
   theme(axis.title.y=element_text(colour='black',size=12),
