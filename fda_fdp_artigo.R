@@ -1,0 +1,328 @@
+if(!suppressWarnings(require(evd))){suppressWarnings(install.packages("evd"));suppressWarnings(library(evd))}#used for GEV functions
+if(!suppressWarnings(require(EnvStats))){suppressWarnings(install.packages("EnvStats"));suppressWarnings(library(EnvStats))}#used for
+if(!suppressWarnings(require(VGAM))){suppressWarnings(install.packages("VGAM"));suppressWarnings(library(VGAM))}#used for gumbel estimates
+if(!suppressWarnings(require(VGAM))){suppressWarnings(install.packages("ggplot2"));suppressWarnings(library(ggplot2))}#used for plot 
+
+
+
+#**********density function**********#
+#*
+
+dbgev <- function(y, m, sigma, delta){ #xi=0
+  # Compute auxiliary variables:
+  mu <- m - (-sigma*log(-log(0.5)))^(1/(delta+1)) # m is median
+  T      <- (y-mu)*(abs(y-mu)^delta)
+  derivate_T <- (delta + 1)*(abs(y-mu)^delta)
+  # Compute density points
+  pdf    <- dgev(T, loc=0, scale=sigma, shape=0)*derivate_T
+  # Return Value
+  return(pdf)
+}
+
+dbgev2 <- function(y, m, sigma, xi, delta){ #xi dif 0
+  # Compute auxiliary variables:
+  mu <-  m - sign((sigma/xi)*((-log(0.5))^(-xi) -1))*(abs((sigma/xi)*((-log(0.5))^(-xi) -1))^(1/(delta+1)))# m is median  
+  T      <- (y-mu)*(abs(y-mu)^delta)
+  derivate_T <- (delta + 1)*(abs(y-mu)^delta)
+  # Compute density points
+  pdf    <- dgev(T, loc=0, scale=sigma, shape=-xi)*derivate_T
+  # Return Value
+  return(pdf)
+}
+
+
+##*** GRÁFICOS DA DENSIDADE ALTERANDO PARÂMETROS *** ##
+##*
+##*
+
+getwd()
+## gráfico fdp muda m  
+
+
+# Criar dados para o gráfico
+x_values <- seq(-3, 3, length.out = 10000)
+
+# Criar dataframe com as densidades para cada valor de m
+df <- data.frame(
+  x = rep(x_values, 4),
+  m = rep(c(-2, -1, 0, 1), each = length(x_values)),
+  sigma = 1,
+  delta = 1
+)
+
+# Calcular as densidades
+df$density <- mapply(dbgev, df$x, df$m, df$sigma, df$delta)
+
+# Converter m para fator para melhor visualização
+df$m_factor <- factor(df$m, levels = c(-2, -1, 0, 1))
+
+# Criar o gráfico com ggplot2
+ggplot(df, aes(x = x, y = density, color = m_factor, group = m_factor)) +
+  geom_line(size = 0.8) +
+  scale_color_manual(
+    name = "",
+    values = c("black", "green", "blue", "red"),
+    labels = c(
+      expression(paste("m = -2")),
+      expression(paste("m = -1")),
+      expression(paste("m = 0")),
+      expression(paste("m = 1"))
+    )  
+  ) + 
+  scale_x_continuous( breaks = c(-3:3),  # Valores inteiros de -3 a 3
+                      labels = c(-3:3)   # Rótulos correspondentes
+  ) +
+  
+  coord_cartesian(xlim = c(-3, 3), ylim = c(0, 1)) +
+  labs(
+    x = "",
+    y = "",
+    title = ""
+  ) +
+  theme_classic() +
+  theme(
+    legend.text = element_text(size = 15),
+    legend.title = element_text(size=20),
+    axis.text = element_text(size = 15),
+    legend.position = c(0.15, 0.8),
+    legend.key = element_blank(),
+    legend.background = element_blank(),
+    legend.text.align = 0,
+    plot.title = element_text(hjust = 0.5)
+ )
+
+## salva a imagem
+ggsave('imagens_artigo\\bgev_muda_m.png', width = 178 , height=124 , units = 'mm', bg = 'white')
+
+
+## exemplo gráfico antigo 
+
+# curve(dbgev(x,m=-2,sigma=1, delta=1), xlim = c(-3,3), xlab='', ylab='', ylim=c(0,1), lwd=1.5,cex.lab=1, 
+#       cex.axis=1)
+# curve(dbgev(x,m=-1,sigma=1, delta=1), xlim = c(-3,3),ylim=c(0,1), lwd=1.5, add = TRUE, col='green')
+# curve(dbgev(x,m=0, sigma=1, delta=1), xlim = c(-3,3),ylim=c(0,1), lwd=1.5, add = TRUE, col="blue")
+# curve(dbgev(x,m=1, sigma=1, delta=1), xlim = c(-3,3),ylim=c(0,1), lwd=1.5, add = TRUE, col='red')
+
+
+
+
+## Gráfico muda_sigma 
+
+x_values <- seq(-3, 3, length.out = 10000)
+
+# Criar dataframe com as densidades para cada valor de m
+df <- data.frame(
+  x = rep(x_values, 4),
+  m = 0,
+  sigma = rep(c(1, 1.5, 2, 3), each = length(x_values)),
+  delta = 1
+)
+
+# Calcular as densidades
+df$density <- mapply(dbgev, df$x, df$m, df$sigma, df$delta)
+
+# Converter m para fator para melhor visualização
+df$m_factor <- factor(df$sigma, levels = c(1, 1.5, 2, 3))
+
+# Criar o gráfico com ggplot2
+ggplot(df, aes(x = x, y = density, color = m_factor, group = m_factor)) +
+  geom_line(size = 0.8) +
+  scale_color_manual(
+    name = "",
+    values = c("black", "green", "blue", "red"),
+    labels = c(
+      expression(paste(sigma," = 1")),
+      expression(paste(sigma," = 1,5")),
+      expression(paste(sigma," = 2")),
+      expression(paste(sigma," = 3"))
+    )  
+  ) + 
+  scale_x_continuous( breaks = c(-3:3),  # Valores inteiros de -3 a 3
+                      labels = c(-3:3)   # Rótulos correspondentes
+  ) +
+  
+  coord_cartesian(xlim = c(-3, 3), ylim = c(0, 1)) +
+  labs(
+    x = "",
+    y = "",
+    title = ""
+  ) +
+  theme_classic() +
+  theme(
+    legend.text = element_text(size = 15),
+    legend.title = element_text(size=20),
+    axis.text = element_text(size = 15),
+    legend.position = c(0.15, 0.8),
+    legend.key = element_blank(),
+    legend.background = element_blank(),
+    legend.text.align = 0,
+    plot.title = element_text(hjust = 0.5)
+  )
+
+ggsave('imagens_artigo\\bgev_muda_sigma_n.png', width = 178 , height=124  , units = 'mm', bg = 'white')
+
+
+# png('imagens_artigo\\bgev_muda_sigma.png', width = 178 , height=124  , units = 'mm', bg = 'white', res=1080)
+# curve(dbgev(x,m=0,sigma=1, delta=1), xlim = c(-3,3), xlab='', ylab='', ylim=c(0,1), lwd=1.5,cex.lab=1, 
+#       cex.axis=1)
+# curve(dbgev(x,m=0,sigma=1.5, delta=1), xlim = c(-3,3),ylim=c(0,1), lwd=1.5, add = TRUE, col='green')
+# curve(dbgev(x,m=0, sigma=2, delta=1), xlim = c(-3,3),ylim=c(0,1), lwd=1.5, add = TRUE, col="blue")
+# curve(dbgev(x,m=0, sigma=3, delta=1), xlim = c(-3,3),ylim=c(0,1), lwd=1.5, add = TRUE, col='red')
+# 
+# legend(x=-3, y=1, legend = c(expression(paste(sigma, "= 1")), expression(paste(sigma, "= 1.5")),
+#                              expression(paste(sigma, "= 2")), expression(paste(sigma, "= 3")) )
+#        ,lwd = 1, col = c("black", "green", "blue","red"), cex=1, bty = "n", y.intersp=1)
+# dev.off()
+
+
+## Gráfico muda delta 
+
+x_values <- seq(-3, 3, length.out = 10000)
+
+# Criar dataframe com as densidades para cada valor de m
+df <- data.frame(
+  x = rep(x_values, 4),
+  m = 0,
+  sigma = 1,
+  delta = rep(c(0, 1, 2, 3), each = length(x_values))
+)
+
+# Calcular as densidades
+df$density <- mapply(dbgev, df$x, df$m, df$sigma, df$delta)
+
+# Converter m para fator para melhor visualização
+df$m_factor <- factor(df$delta, levels = c(0, 1, 2, 3))
+
+# Criar o gráfico com ggplot2
+ggplot(df, aes(x = x, y = density, color = m_factor, group = m_factor)) +
+  geom_line(size = 0.8) +
+  scale_color_manual(
+    name = "",
+    values = c("black", "green", "blue", "red"),
+    labels = c(
+      expression(paste(delta," = 0")),
+      expression(paste(delta," = 1")),
+      expression(paste(delta," = 2")),
+      expression(paste(delta," = 3"))
+    )  
+  ) + 
+  scale_x_continuous( breaks = c(-3:3),  # Valores inteiros de -3 a 3
+                      labels = c(-3:3)   # Rótulos correspondentes
+  ) +
+  
+  coord_cartesian(xlim = c(-3, 3), ylim = c(0, 1)) +
+  labs(
+    x = "",
+    y = "",
+    title = ""
+  ) +
+  theme_classic() +
+  theme(
+    legend.text = element_text(size = 15),
+    legend.title = element_text(size=20),
+    axis.text = element_text(size = 15),
+    legend.position = c(0.10, 0.8),
+    legend.key = element_blank(),
+    legend.background = element_blank(),
+    legend.text.align = 0,
+    plot.title = element_text(hjust = 0.5)
+  )
+
+
+
+ggsave('imagens_artigo\\bgev_muda_delta_n.png', width = 178 , height=124  , units = 'mm', bg = 'white')
+
+
+# png('imagens_artigo\\bgev_muda_delta.png', width = 178 , height=124  , units = 'mm', bg = 'white', res=1080)
+# 
+# curve(dbgev(x,m=0,sigma=1, delta=0), xlim = c(-3,3), xlab='', ylab='', ylim=c(0,1), lwd=1.5,cex.lab=1, 
+#       cex.axis=1)
+# curve(dbgev(x,m=0,sigma=1, delta=1), xlim = c(-3,3),ylim=c(0,1), lwd=1.5, add = TRUE, col='green')
+# curve(dbgev(x,m=0, sigma=1, delta=2), xlim = c(-3,3),ylim=c(0,1), lwd=1.5, add = TRUE, col="blue")
+# curve(dbgev(x,m=0, sigma=1, delta=3), xlim = c(-3,3),ylim=c(0,1), lwd=1.5, add = TRUE, col='red')
+# legend(x=-3, y=1, legend = c(expression(paste(delta, "= 0")), expression(paste(delta, "= 1")),
+#                              expression(paste(delta, "= 2")), expression(paste(delta, "= 3")) )
+#        ,lwd = 1, col = c("black", "green", "blue","red"), cex=1, bty = "n", y.intersp=1)
+# 
+# dev.off()
+
+
+
+x_values <- seq(-3, 3, length.out = 10000)
+
+# Criar dataframe com as densidades para cada valor de m
+df <- data.frame(
+  x = rep(x_values, 4),
+  m = 0,
+  sigma = 1,
+  delta = 1, 
+  xi = rep(c(-1, -0.5, 0.5, 1), each = length(x_values))
+)
+
+# Calcular as densidades
+df$density <- mapply(dbgev2, df$x, df$m, df$sigma, df$xi, df$delta)
+
+# Converter m para fator para melhor visualização
+df$m_factor <- factor(df$xi, levels = c(-1, -0.5, 0.5, 1))
+
+# Criar o gráfico com ggplot2
+ggplot(df, aes(x = x, y = density, color = m_factor, group = m_factor)) +
+  geom_line(size = 0.8) +
+  scale_color_manual(
+    name = "",
+    values = c("black", "green", "blue", "red"),
+    labels = c(
+      expression(paste(xi," = 0")),
+      expression(paste(xi," = 1")),
+      expression(paste(xi," = 2")),
+      expression(paste(xi," = 3"))
+    )  
+  ) + 
+  scale_x_continuous( breaks = c(-3:3),  # Valores inteiros de -3 a 3
+                      labels = c(-3:3)   # Rótulos correspondentes
+  ) +
+  
+  coord_cartesian(xlim = c(-3, 3), ylim = c(0, 2)) +
+  labs(
+    x = "",
+    y = "",
+    title = ""
+  ) +
+  theme_classic() +
+  theme(
+    legend.text = element_text(size = 15),
+    legend.title = element_text(size=20),
+    axis.text = element_text(size = 15),
+    legend.position = c(0.10, 0.8),
+    legend.key = element_blank(),
+    legend.background = element_blank(),
+    legend.text.align = 0,
+    plot.title = element_text(hjust = 0.5)
+  )
+
+ggsave('imagens_artigo/bgev_muda_xi_n.png', width = 178 , height=124  , units = 'mm', bg = 'white')
+
+# png('imagens_artigo/bgev_muda_xi.png', width = 178 , height=124  , units = 'mm', bg = 'white', res=1080)
+# 
+# curve(dbgev2(x,m=0,sigma=1, delta=1, xi=1), xlim = c(-3,3), xlab='', ylab='', ylim=c(0,2), lwd=1.5,cex.lab=1, 
+#       cex.axis=1)
+# curve(dbgev2(x,m=0,sigma=1, delta=1, xi=0.5), xlim = c(-3,3),ylim=c(0,1), lwd=1.5, add = TRUE, col='green')
+# curve(dbgev2(x,m=0, sigma=1, delta=1.5, xi=-0.5), xlim = c(-3,3),ylim=c(0,1), lwd=1.5, add = TRUE, col="blue")
+# curve(dbgev2(x,m=0, sigma=1, delta=1, xi=-1), xlim = c(-3,3),ylim=c(0,1), lwd=1.5, add = TRUE, col='red')
+# legend(x=-3, y=2.1, legend = c(expression(paste(xi, "= -1")), expression(paste(xi, "= -0.5")),
+#                              expression(paste(xi, "= 0.5")), expression(paste(xi, "= 1")) )
+#        ,lwd = 1, col = c("black", "green", "blue","red"), cex=1, bty = "n", y.intersp=1)
+# legend(x=-3, y=1.5, legend = c(expression(paste('(',-infinity," ,0,40]")), expression(paste('(',-infinity," ,0,77]")),
+#                              expression(paste('[-1,9 ,',infinity,")")), expression(paste('[-1,53,',infinity, ")")) )
+#        ,lwd = 1, col = c("black", "green", "blue","red"), cex=1, bty = "n", y.intersp=1)
+# dev.off()
+# 
+
+
+
+
+
+suport <- function(sigma, xi, delta, mu){
+  round(sign(-sigma/xi)*abs(sigma/xi)^(1/(delta+1)),4) 
+}
+

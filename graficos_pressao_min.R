@@ -3,8 +3,11 @@
 pressao <- readRDS(file = 'D:/Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/pressao_diaria.rds')
 pressao_min <- readRDS(file='D:/Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/pressao_min.rds')
 
-max(pressao$pressao)
-min(pressao$pressao)
+summary(pressao$pressao)
+sd(pressao$pressao)
+
+
+
 
 H1 <- ggplot(pressao,aes(x=pressao))+
   geom_histogram(aes(y = ..density..),colour='white',fill='#696969',breaks=seq(924,940,1))+

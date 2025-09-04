@@ -4,14 +4,26 @@ temp <- readRDS(file='D://Users/Mathews/Documents/Git/mestrado_unb/dados_resumid
 
 umidade_min <- readRDS(file = 'D://Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/umidade_minima.rds')
 
-max(temp$umidade)
-min(temp$umidade)
+summary(temp$umidade)
+sd(temp$umidade)
 
 library(tidyverse)
 
 
-H1<- ggplot(temp,aes(x=umidade))+
-  geom_histogram(aes(y = ..density..),colour='white',fill='#696969',breaks=seq(20,92,5))+
+mean(df$UMIDADE.RELATIVA.DO.AR..HORARIA...., na.rm=T)
+sd(df$UMIDADE.RELATIVA.DO.AR..HORARIA...., na.rm=T)
+median(df$UMIDADE.RELATIVA.DO.AR..HORARIA...., na.rm=T)
+quantile(df$UMIDADE.RELATIVA.DO.AR..HORARIA...., na.rm=T)
+max(df$UMIDADE.RELATIVA.DO.AR..HORARIA...., na.rm=T)
+
+min(df$UMIDADE.RELATIVA.DO.AR..HORARIA...., na.rm=T)
+
+
+
+
+
+H1<- ggplot(df,aes(x=UMIDADE.RELATIVA.DO.AR..HORARIA....))+
+  geom_histogram(aes(y = ..density..),colour='white',fill='#696969',breaks=seq(10,100,5))+
   labs(y='',x='x')+
   theme_bw()+
   theme(axis.title.y=element_text(colour='black',size=12),
@@ -19,6 +31,13 @@ H1<- ggplot(temp,aes(x=umidade))+
         axis.text=element_text(colour='black',size=9.5),
         panel.border=element_blank(),
         axis.line=element_line(colour='black'))
+
+
+mean(umidade_min)
+median(umidade_min)
+sd(umidade_min)
+min(umidade_min)
+max(umidade_min)
 
 
 
@@ -76,3 +95,14 @@ library(cowplot)
 plot_grid(H1,H2)
 ggsave('D:/Users/Mathews/Documents/Git/mestrado_unb/imagens/painel_umidade.png',
        width=158,height=93,units='mm')
+
+
+
+
+png("D:/Users/Mathews/Documents/Git/mestrado_unb/imagens/correcoes_cira/ACF_U.png",width = 800, height = 500)
+acf(temp$umidade, main = "")
+dev.off()
+H1
+ggsave('D:/Users/Mathews/Documents/Git/mestrado_unb/imagens/correcoes_cira/hist_data_U.png',width=158,height=93,units='mm')
+H2
+ggsave('D:/Users/Mathews/Documents/Git/mestrado_unb/imagens/correcoes_cira/resultado_U.png',width=158,height=93,units='mm')

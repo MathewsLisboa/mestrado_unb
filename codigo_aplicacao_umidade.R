@@ -24,6 +24,9 @@ tabela_regressao$chuva <- ifelse(tabela_regressao$Precipitacao_media>0,1,0)
 
 
 
+mean(tabela_regressao$Temperatura_bulbo)
+mean(tabela_regressao$Vento_rajada_max)
+
 ##### Testando com apenas 1 variável ##### 
 
 ### Temperatura do ar seco, Pressão e Velocidade do vento - Estacoes 

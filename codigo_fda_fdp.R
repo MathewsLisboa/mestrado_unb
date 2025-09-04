@@ -10,7 +10,7 @@ library(tidyverse)
 
 #setwd('C:\\Users\\Usuario\\Documents\\UNB_mestrado\\Orientação\\projeto_1')
 
-setwd("D:\\Users\\Mathews\\Documents\\UNB_mestrado\\projeto_1")
+#setwd("D:\\Users\\Mathews\\Documents\\UNB_mestrado\\projeto_1")
 
 
 mfrow=c(1,1)
@@ -71,7 +71,31 @@ F_Bgev <- function(y,mu=0,sigma=1, xi=0, delta=1){
 qbgevd   <- function(p, mu, sigma, xi, delta){
   quantile <- sign(qgev(p, mu, sigma, xi))*(abs(qgev(p, 0, sigma, xi)))^(1/(delta + 1)) + mu
   return(quantile)
+}dbgev2 <- function(y, m, sigma, xi, delta){ #xi dif 0
+  # Compute auxiliary variables:
+  mu <-  m - sign((sigma/xi)*((-log(0.5))^(-xi) -1))*(abs((sigma/xi)*((-log(0.5))^(-xi) -1))^(1/(delta+1)))# m is median  
+  T      <- (y-mu)*(abs(y-mu)^delta)
+  derivate_T <- (delta + 1)*(abs(y-mu)^delta)
+  # Compute density points
+  pdf    <- dgev(T, loc=0, scale=sigma, shape=-xi)*derivate_T
+  # Return Value
+  return(pdf)
 }
+
+#*************Function to be maximized**********************#
+log_likelihood2 <- function(theta) 
+{
+  kk1 <- ncol(X)
+  beta <- theta[1:kk1]
+  sigma <- theta[(kk1+1.0)]
+  xi <- theta[kk1+2.0]
+  delta <- theta[(kk1+3.0)] 
+  eta <- as.vector(X%*%beta)                                                 
+  m <- eta #identity link                            	
+  log_lik <- sum(log(dbgev2(y, m, sigma, xi, delta)))#function to be maximized  
+  return(log_lik)
+}
+
 
 ### gerador pseudo aleatório de função 
 

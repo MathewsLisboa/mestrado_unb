@@ -6,7 +6,7 @@ data500 <- read.table("Estimates_Scenario3_n500.txt", h=T)
 
 #**************************MLE estimates******************************#
 
-MLE_beta1_n50 <- data50$MLE_beta1;
+MLE_beta1_n50 <- data50$MLE_beta1; 
 MLE_beta2_n50 <- data50$MLE_beta2; 
 MLE_beta3_n50 <- data50$MLE_beta3; 
 MLE_xi_n50 <- data50$MLE_xi;
@@ -29,6 +29,7 @@ MLE_delta_n500 <- data500$MLE_delta;
 
 
 #********************MLE estimates of beta1****************#
+
 boxplot(MLE_beta1_n50,MLE_beta1_n100,MLE_beta1_n500, main=expression( paste("MLE for ", beta[1])),
 xlab="Sample size",ylab="",names=c(50,100,500),outline=T,
 ylim=c(0,2), cex=1.0,cex.lab=2.0,cex.axis=1.5,cex.main=2.0, pch=16, col=NULL)
@@ -42,6 +43,7 @@ ylim=c(1,3), cex=1.0,cex.lab=2.0,cex.axis=1.5,cex.main=2.0, pch=16, col=NULL)
 abline(2.0,0,col=2,lty=2,lwd=2)
 
 #********************MLE estimates of beta3****************#
+
 boxplot(MLE_beta3_n50,MLE_beta3_n100,MLE_beta3_n500, main=expression( paste("MLE for ", beta[3])),
 xlab="Sample size",ylab="",names=c(50,100,500),outline=T,
 ylim=c(0.5,3), cex=1.0,cex.lab=2.0,cex.axis=1.5,cex.main=2.0, pch=16, col=NULL)

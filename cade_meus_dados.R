@@ -103,9 +103,10 @@ temp2$max_orvalho %>% hist(20)
 
 temp2$max_orvalho %>% density() %>% plot()
 
-saveRDS(df, file = 'D:\\Users\\Mathews\\Documents\\Git\\mestrado_unb/dados_resumidos/dados_originais.rds')
+#saveRDS(df, file = 'D:\\Users\\Mathews\\Documents\\Git\\mestrado_unb/dados_resumidos/dados_originais.rds')
 
 
+df <- readRDS('D:\\Users\\Mathews\\Documents\\Git\\mestrado_unb/dados_resumidos/dados_originais.rds')
 #### TEMPERATURA BULBO SECO MÉDIA SEM DIÁRIA ANTES ####
 
 hist(df$TEMPERATURA.DO.AR...BULBO.SECO..HORARIA...C.)
@@ -365,15 +366,19 @@ plot(density(c(mi,MI))) ### acho que ficou ruim
 
 #### TEMPERATURA DO ORVARLHO SEM FAZER DIÁRIA ####
 
+60*24
+
+temp_orvalho <- df$TEMPERATURA.DO.PONTO.DE.ORVALHO...C.
+
 
 hist(temp_orvalho)
 plot(temp_orvalho, type='l')
 acf(temp_orvalho[is.na(temp_orvalho)==F])
 
 
-temp_orvalho <- df$TEMPERATURA.DO.PONTO.DE.ORVALHO...C.
+
 HIGH <- temp_orvalho
-N<-length(HIGH);n<-1360
+N<-length(HIGH);n<-1500
 tau<-floor(N/n)
 mi<-numeric(tau);j<-1
 
@@ -382,7 +387,7 @@ for (i in 1:tau){
   j<-j+n }
 
 acf(mi)
-hist(mi,10, main = 'TEMP MÍNIMA DO ORVALHO DIÁRIA BLOCOS DE 1360')
+hist(mi,10 ,main = 'TEMP MÍNIMA DO ORVALHO DIÁRIA BLOCOS DE 1440')
 plot(density(mi), main='')
 
 
@@ -407,11 +412,15 @@ plot(density(c(mi,MI)))
 #### TEMPERATURA PONTO DO ORVALHO MÉDIA COM DIÁRIA ####
 
 
+hist(df$TEMPERATURA.DO.PONTO.DE.ORVALHO...C.)
+acf(df$TEMPERATURA.DO.PONTO.DE.ORVALHO...C.)
+
+
 preciptacao_media <- df %>% group_by(Data) %>% summarise(preciptacao_media = mean(PRECIPITAÇÃO.TOTAL..HORÁRIO..mm.))
 
 temp_media <- df  %>% group_by(Data) %>% summarise(media_temp = mean(TEMPERATURA.DO.PONTO.DE.ORVALHO...C., na.rm = T))
 
-saveRDS(temp_media, file = 'D://Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/temp_media_diaria.rds')
+#saveRDS(temp_media, file = 'D://Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/temp_media_diaria.rds')
 
 hist(temp_media$media_temp)
 plot(temp_media$media_temp, type = 'l')
@@ -466,7 +475,7 @@ for (i in 1:tau){
   mi[i]<-min(HIGH[j:(j+n-1)])
   j<-j+n }
 
-temp_min_orvalho <- mi
+#temp_min_orvalho <- mi
 # saveRDS(mi, file = 'D:\\Users\\Mathews\\Documents\\Git\\mestrado_unb\\dados_resumidos\\temperatura_min_orvalho.rds')
 
 hist(mi, main = 'TEMP MÍNIMA ORVALHO DO MÍNIMO DIÁRIO BLOCO 60', probability = T)
