@@ -4,23 +4,79 @@ setwd('D:\\Users\\Mathews\\Documents\\Git\\mestrado_unb')
 
 source("BGEV_MLE.r")
 source("envelope_function.r")
+source("envelope_BGEV_ggplot.r")
 source("BGEV2_MLE.r")
 source("envelope_function2.r")
+
+
+#**********density function**********#
+#*
+dbgev <- function(y, m, sigma, delta){ #xi=0
+  # Compute auxiliary variables:
+  mu <- m - (-sigma*log(-log(0.5)))^(1/(delta+1)) # m is median
+  T      <- (y-mu)*(abs(y-mu)^delta)
+  derivate_T <- (delta + 1)*(abs(y-mu)^delta)
+  # Compute density points
+  pdf    <- dgev(T, loc=0, scale=sigma, shape=0)*derivate_T
+  # Return Value
+  return(pdf)
+}
+
+#*************Function to be maximized**********************#
+log_likelihood <- function(theta) 
+{
+  kk1 <- ncol(X)
+  beta <- theta[1:kk1]
+  sigma <- theta[(kk1+1.0)]
+  delta <- theta[(kk1+2.0)] 
+  eta <- as.vector(X%*%beta)                                                 
+  m <- eta #identity link                            	
+  log_lik <- sum(log(dbgev(y, m, sigma, delta)))#function to be maximized  
+  return(log_lik)
+}
+
+
+#**********density function**********#
+dbgev2 <- function(y, m, sigma, xi, delta){ #xi dif 0
+  # Compute auxiliary variables:
+  mu <-  m - sign((sigma/xi)*((-log(0.5))^(-xi) -1))*(abs((sigma/xi)*((-log(0.5))^(-xi) -1))^(1/(delta+1)))# m is median  
+  T      <- (y-mu)*(abs(y-mu)^delta)
+  derivate_T <- (delta + 1)*(abs(y-mu)^delta)
+  # Compute density points
+  pdf    <- dgev(T, loc=0, scale=sigma, shape=-xi)*derivate_T
+  # Return Value
+  return(pdf)
+}
+
+#*************Function to be maximized**********************#
+log_likelihood2 <- function(theta) 
+{
+  kk1 <- ncol(X)
+  beta <- theta[1:kk1]
+  sigma <- theta[(kk1+1.0)]
+  xi <- theta[kk1+2.0]
+  delta <- theta[(kk1+3.0)] 
+  eta <- as.vector(X%*%beta)                                                 
+  m <- eta #identity link                            	
+  log_lik <- sum(log(dbgev2(y, m, sigma, xi, delta)))#function to be maximized  
+  return(log_lik)
+}
 
 
 library(tidyverse)
 library(readr)
 library(lubridate)
 library(stringr)
+library(ggplot2)
+library(evd)
 
 ## lendo os dados da tabela regressão 
 tabela_regressao <- read_rds(file = 'dados_resumidos/tabela_regressao.rds')
-df <- read_rds("dados_resumidos/dados_originais.rds")
 
-tabela_regressao$Precipitacao_media[which(is.na(tabela_regressao$Precipitacao_media))] <- 0
 tabela_regressao$estacoes <- ifelse(month(tabela_regressao$Data)%in%c(10,11,12,1,2,3,4),1,0) ### 1 está para meses de verão
                                                                                              ### 0 está para meses de invero
-tabela_regressao$chuva <- ifelse(tabela_regressao$Precipitacao_media>0,1,0)
+tabela_regressao_nova <-  tabela_regressao %>% select(Temperatura_orvalho, estacoes, Umidade_rel,Pressao_media, Vento_rajada_max)
+saveRDS(tabela_regressao_nova,"dados_resumidos/tabela_regressao_nova.rds")    
 
 ###### correlacao #####
 par(mfrow=c(1,1))
@@ -65,9 +121,6 @@ ggsave("D:/Users/Mathews/Documents/Git/mestrado_unb/imagens/correcoes_cira/TO_VS
 
 
 
-
-
-
 png("D:/Users/Mathews/Documents/Git/mestrado_unb/imagens/correcoes_cira/TO_VS_vvr.png",width = 800, height = 500)
 plot(tabela_regressao$Vento_velocidade , tabela_regressao$Temperatura_orvalho, 
      pch=16, cex=2.2, cex.lab=1.5, cex.axis=1.5, cex.main=1.5,xlab = '', ylab='')
@@ -103,15 +156,6 @@ ggplot(tabela_regressao, aes(x=as.factor(labels), y=Temperatura_orvalho)) +
     axis.line = element_line(colour = "black"))
 ggsave("D:/Users/Mathews/Documents/Git/mestrado_unb/imagens/correcoes_cira/TO_VS_E.png",
        width = 800, height = 500, units = 'px' )
-
-
-
-
-
-
-
-
-
 
 
 mean(tabela_regressao$Umidade_rel)
@@ -396,7 +440,7 @@ envelope_BGEV(y, X, c(fit_BGEV$beta, fit_BGEV$sigma, fit_BGEV$delta)) ## até qu
 envelope_BGEV2(y, X, c(fit_BGEV2$beta, fit_BGEV2$sigma,fit_BGEV2$xi ,fit_BGEV2$delta)) ## até que ficou razoável
 
 
-## percebi que temperatura estava com muita correlçção com umidade e pressão, então decidi tirar do modelo
+### Percebi que temperatura estava com muita correlçção com umidade e pressão, então decidi tirar do modelo
 ### Se provou uma decisão melhor retirar Temperatura, e recolocar pressão no modelo
 ### Melhor modelo com 4 variáveis ####
 
@@ -471,7 +515,6 @@ x2 <- tabela_regressao$Pressao_media -  mean(tabela_regressao$Pressao_media)
 x3 <- tabela_regressao$Vento_rajada_max -  mean(tabela_regressao$Vento_rajada_max)
 x4 <- tabela_regressao$estacoes
 
-## E se esse for o modelo final ??
 n <- nrow(tabela_regressao)
 X<- matrix(c(rep(1,n),x1,x3,x4),ncol=4,byrow=F); #retirando pressão
 y <- tabela_regressao$Temperatura_orvalho
@@ -558,7 +601,13 @@ AICc <- AIC + (2*(ncol(X)+3)*((ncol(X)+3)+1))/(nrow(X)-(ncol(X)+3)-1)
 ### envelope
 par(mfrow=c(1,2))
 envelope_BGEV(y, X, c(fit_BGEV$beta, fit_BGEV$sigma, fit_BGEV$delta)) ##
+
+envelope_BGEV_ggplot(y, X, c(fit_BGEV$beta, fit_BGEV$sigma, fit_BGEV$delta))
+ggsave()
+
+
 envelope_BGEV2(y, X, c(fit_BGEV2$beta, fit_BGEV2$sigma,fit_BGEV2$xi ,fit_BGEV2$delta)) ## até que ficou legalzinho 
+envelope_BGEV_ggplot()
 
 
 #### Modelos 2 a 2 ####

@@ -24,7 +24,6 @@ min(temp_media$media_temp)
 library(cowplot)
 library(tidyverse)
 library(evd)
-library(tidyverse)
 
 
 acf(temp_media$media_temp, main="")
@@ -88,11 +87,14 @@ ggplot(temp_min,aes(x=x))+
 
 
 Z2 <- temp_min_orvalho
+
 fit <- fExtremes::gevFit(Z2, type = 'mle')
+
+
 starts <- c(mu=fit@fit$par.ests[2],sigma=fit@fit$par.ests[3], xi=fit@fit$par.ests[1], delta=0)
 test <- optim(par=starts,fn=likbgev,y=Z2,method = 'BFGS',hessian = T)
 
-fit@fit$par.ests
+fit@fit$par.ests[2]
 fit@fit$par.ses
 sqrt(diag(fit@fit$varcov))
 
@@ -110,7 +112,7 @@ H2 <- ggplot(temp_min,aes(x=x))+
   geom_line(aes(x=x,y=dbgevd(x, mu=test$par[1],sigma=test$par[2],
                             xi = test$par[3], delta= test$par[4]), color='BGEV'),size=1)+
   ##PorLegenda
-  geom_line(aes(x=x,y=dgev(x, loc=8.9407448, scale = 5.7027691, shape = -0.6542575), color='GEV'),size=1)+
+  geom_line(aes(x=x,y=dgev(x, loc=fit@fit$par.ests[2], scale = fit@fit$par.ests[3], shape = fit@fit$par.ests[1]), color='GEV'),size=1)+
   labs(x='min',y='', color='')+
   scale_color_manual(values=colors)+
   theme_bw()+
@@ -120,6 +122,7 @@ H2 <- ggplot(temp_min,aes(x=x))+
         panel.border=element_blank(),
         axis.line=element_line(colour='black'),
         legend.position = 'top')
+H2
 
 nrow(df)
 

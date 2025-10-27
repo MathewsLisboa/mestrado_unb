@@ -376,9 +376,30 @@ plot(temp_orvalho, type='l')
 acf(temp_orvalho[is.na(temp_orvalho)==F])
 
 
+N <- length(temp_orvalho)
+High <- temp_orvalho
+result <- data.frame() 
+
+for (k in 1:3000) {  
+  n<-k  
+  tau<-floor(N/n)  
+  m<-numeric(tau) ; j<-1
+  for (i in 1:tau){   
+    m[i]<-max(High[j:(j+n-1)])    
+    j<-j+n }    
+  m<-m[-1]    
+  teste<-Box.test(m, lag = 1,              
+                  type = c("Box-Pierce", "Ljung-Box"), 
+                  fitdf = 0)    
+  teste$indice <- k   
+  teste <- c(teste$indice,teste$p.value)
+  result <- rbind(result, teste)
+}
+
+
 
 HIGH <- temp_orvalho
-N<-length(HIGH);n<-1500
+N<-length(HIGH);n<-2000
 tau<-floor(N/n)
 mi<-numeric(tau);j<-1
 
@@ -387,8 +408,11 @@ for (i in 1:tau){
   j<-j+n }
 
 acf(mi)
-hist(mi,10 ,main = 'TEMP MÍNIMA DO ORVALHO DIÁRIA BLOCOS DE 1440')
+hist(mi,10 ,main = 'TEMP MÍNIMA DO ORVALHO DIÁRIA BLOCOS DE 1440', probability = T)
+lines(density(mi))
 plot(density(mi), main='')
+
+
 
 
 temp_orvalho <- df$TEMPERATURA.DO.PONTO.DE.ORVALHO...C.
@@ -413,7 +437,7 @@ plot(density(c(mi,MI)))
 
 
 hist(df$TEMPERATURA.DO.PONTO.DE.ORVALHO...C.)
-acf(df$TEMPERATURA.DO.PONTO.DE.ORVALHO...C.)
+#acf(df$TEMPERATURA.DO.PONTO.DE.ORVALHO...C.)
 
 
 preciptacao_media <- df %>% group_by(Data) %>% summarise(preciptacao_media = mean(PRECIPITAÇÃO.TOTAL..HORÁRIO..mm.))
@@ -422,7 +446,8 @@ temp_media <- df  %>% group_by(Data) %>% summarise(media_temp = mean(TEMPERATURA
 
 #saveRDS(temp_media, file = 'D://Users/Mathews/Documents/Git/mestrado_unb/dados_resumidos/temp_media_diaria.rds')
 
-hist(temp_media$media_temp)
+hist(temp_media$media_temp , main = 'Dados diários sem bloco')
+lines(density(temp_media$media_temp))
 plot(temp_media$media_temp, type = 'l')
 acf(temp_media$media_temp)
 
@@ -453,7 +478,7 @@ names(result) <- c("Tamanho do bloco","P-valor (teste de Ljung-Box)")
 
 
 High <- temp_media$media_temp
-N<-length(High)  ; n<-60
+N<-length(High)  ; n<-10
 tau<-floor(N/n)
 MI<-numeric(tau) ; j<-1
 
@@ -468,7 +493,7 @@ hist(MI,20)
 plot(density(MI))
 
 HIGH <- temp_media$media_temp
-N<-length(HIGH)  ; n<-60
+N<-length(HIGH)  ; n<-5
 tau<-floor(N/n)
 mi<-numeric(tau) ; j<-1
 for (i in 1:tau){
@@ -478,9 +503,12 @@ for (i in 1:tau){
 #temp_min_orvalho <- mi
 # saveRDS(mi, file = 'D:\\Users\\Mathews\\Documents\\Git\\mestrado_unb\\dados_resumidos\\temperatura_min_orvalho.rds')
 
-hist(mi, main = 'TEMP MÍNIMA ORVALHO DO MÍNIMO DIÁRIO BLOCO 60', probability = T)
-acf(mi)
+hist(mi, main = 'TEMP n =  5', probability = T)
+lines(density(mi))
 plot(density(mi), main='')
+
+
+acf(mi)
 
 hist(c(mi,MI))
 plot(density(c(mi,MI)))
