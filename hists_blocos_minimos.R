@@ -8,7 +8,7 @@ source("BGEV_functions.R")
 
 ### Leitura dos dados originais 
 
-df <- readRDS('D:\\Users\\Mathews\\Documents\\Git\\mestrado_unb/dados_resumidos/dados_originais.rds')
+df <- readRDS('dados_resumidos/dados_originais.rds')
 
 ### criação dos dados por média de tempo de orvalho 
 
@@ -87,7 +87,7 @@ for( i in 1:length(fns)) {
     geom_density(lwd=1, 
                  linetype = 1, 
                  colour = 'black')+
-    labs(x='m',y='', color='')+
+    labs(x='min',y='', color='')+
     scale_color_manual(values=colors)+
     theme_bw()+
     theme(axis.title.y=element_text(colour='black',size=12),

@@ -79,15 +79,6 @@ tabela_regressao_nova <-  tabela_regressao %>% select(Temperatura_orvalho, estac
 saveRDS(tabela_regressao_nova,"dados_resumidos/tabela_regressao_nova.rds")    
 
 ###### correlacao #####
-par(mfrow=c(1,1))
-
-
-png("D:/Users/Mathews/Documents/Git/mestrado_unb/imagens/correcoes_cira/TO_VS_U.png",width = 800, height = 500 )
-
-plot(tabela_regressao$Umidade_rel, tabela_regressao$Temperatura_orvalho ,
-     pch=16, cex=2.2, cex.lab=1.5, cex.axis=1.5, cex.main=1.5,xlab = '', ylab='',width = 800, height = 500)
-
-dev.off()
 
 ggplot(tabela_regressao, aes(x=Umidade_rel, y=Temperatura_orvalho)) +
   geom_point(size=2, shape=19)+
@@ -98,14 +89,9 @@ ggplot(tabela_regressao, aes(x=Umidade_rel, y=Temperatura_orvalho)) +
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(), 
     axis.line = element_line(colour = "black"))
-ggsave("D:/Users/Mathews/Documents/Git/mestrado_unb/imagens/correcoes_cira/TO_VS_U.png",
+ggsave("imagens/correcoes_cira/TO_VS_U.png",
        width = 800, height = 500, units = 'px' )
 
-
-png("D:/Users/Mathews/Documents/Git/mestrado_unb/imagens/correcoes_cira/TO_VS_P.png",width = 800, height = 500)
-plot(tabela_regressao$Pressao_media, tabela_regressao$Temperatura_orvalho ,
-     pch=16, cex=2.2, cex.lab=1.5, cex.axis=1.5, cex.main=1.5,xlab = '', ylab='',width = 800, height = 500)
-dev.off()
 
 ggplot(tabela_regressao, aes(x=Pressao_media, y=Temperatura_orvalho)) +
   geom_point(size=2, shape=19)+
@@ -116,15 +102,10 @@ ggplot(tabela_regressao, aes(x=Pressao_media, y=Temperatura_orvalho)) +
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(), 
     axis.line = element_line(colour = "black"))
-ggsave("D:/Users/Mathews/Documents/Git/mestrado_unb/imagens/correcoes_cira/TO_VS_P.png",width = 800, height = 500, 
+ggsave("imagens/correcoes_cira/TO_VS_P.png",width = 800, height = 500, 
        units='px')
 
 
-
-png("D:/Users/Mathews/Documents/Git/mestrado_unb/imagens/correcoes_cira/TO_VS_vvr.png",width = 800, height = 500)
-plot(tabela_regressao$Vento_velocidade , tabela_regressao$Temperatura_orvalho, 
-     pch=16, cex=2.2, cex.lab=1.5, cex.axis=1.5, cex.main=1.5,xlab = '', ylab='')
-dev.off()
 
 ggplot(tabela_regressao, aes(x=Vento_velocidade, y=Temperatura_orvalho)) +
   geom_point(size=2, shape=19)+
@@ -135,13 +116,10 @@ ggplot(tabela_regressao, aes(x=Vento_velocidade, y=Temperatura_orvalho)) +
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(), 
     axis.line = element_line(colour = "black"))
-ggsave("D:/Users/Mathews/Documents/Git/mestrado_unb/imagens/correcoes_cira/TO_VS_vvr.png",width = 800, height = 500, 
+ggsave("imagens/correcoes_cira/TO_VS_vvr.png",width = 800, height = 500, 
        units='px')
 
-
-
 tabela_regressao$labels <- labels <- tabela_regressao$estacoes %>% as.character()
-
 tabela_regressao$labels <- ifelse(test = tabela_regressao$labels== '1', 'Rainy', 'Dry')
 
 
@@ -154,21 +132,9 @@ ggplot(tabela_regressao, aes(x=as.factor(labels), y=Temperatura_orvalho)) +
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(), 
     axis.line = element_line(colour = "black"))
-ggsave("D:/Users/Mathews/Documents/Git/mestrado_unb/imagens/correcoes_cira/TO_VS_E.png",
+ggsave("imagens/correcoes_cira/TO_VS_E.png",
        width = 800, height = 500, units = 'px' )
 
-
-mean(tabela_regressao$Umidade_rel)
-mean(tabela_regressao$Pressao_media)
-
-cor(tabela_regressao$Temperatura_orvalho, tabela_regressao$Umidade_rel) ## temperatura também não deve está no 
-                                                                        ## no modelo com umidade
-cor(tabela_regressao$Umidade_rel, tabela_regressao$Pressao_media) ### pressão e umidade podem compor
-cor(tabela_regressao$Pressao_media, tabela_regressao$Temperatura_bulbo) ## Temperatura e Pressão não devem
-                                                                        #compor o memso modelo
-
-
-# envelope_BGEV(y, X, c(fit_BGEV$beta, fit_BGEV$sigma, fit_BGEV$delta))
 
 #### Modelos simples ######
 
